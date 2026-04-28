@@ -1,0 +1,1923 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cricket-Cram — AP Study Tools</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=Lora:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+/* ═══════════════════════════════════════════════════════════
+   DESIGN TOKENS — Soft & Friendly Pastel Redesign
+   ═══════════════════════════════════════════════════════════ */
+:root {
+  /* Backgrounds */
+  --bg:       #F7F5F2;
+  --surface:  #FFFFFF;
+  --surface2: #F0EDE8;
+  --surface3: #E8E4DF;
+
+  /* Borders */
+  --border:        rgba(0,0,0,0.08);
+  --border-bright: rgba(0,0,0,0.15);
+
+  /* Text */
+  --text:       #2C2825;
+  --text-muted: #7A736C;
+  --text-faint: #B0A89F;
+
+  /* Brand — warm sage green */
+  --accent:      #5B9B6A;
+  --accent2:     #4A8A59;
+  --accent-light:#D4EDDA;
+  --accent-dim:  rgba(91,155,106,0.12);
+  --accent-glow: rgba(91,155,106,0.2);
+
+  /* Per-course accent colours */
+  --world-accent:  #5B9B6A;
+  --world-light:   #D4EDDA;
+  --bio-accent:    #4A90D9;
+  --bio-light:     #D0E8F8;
+  --psych-accent:  #9B6BB5;
+  --psych-light:   #EBD9F5;
+  --calc-accent:   #D97B4A;
+  --calc-light:    #FAE0CC;
+
+  /* Status */
+  --amber:     #D4902B;
+  --amber-dim: rgba(212,144,43,0.12);
+  --red:       #C0453A;
+  --red-dim:   rgba(192,69,58,0.1);
+  --green:     #3A8C52;
+  --green-dim: rgba(58,140,82,0.12);
+
+  /* Radii */
+  --r-sm: 10px;
+  --r:    16px;
+  --r-lg: 24px;
+  --r-xl: 32px;
+
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
+  --shadow:    0 4px 20px rgba(0,0,0,0.08);
+  --shadow-lg: 0 8px 40px rgba(0,0,0,0.12);
+}
+
+/* ── Global Reset ───────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── Screen System ──────────────────────────────────────── */
+.screen { display: none; }
+.screen.active { display: block; }
+
+/* ── Base Button Reset ──────────────────────────────────── */
+button {
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: inherit;
+  font-size: inherit;
+  padding: 0;
+  text-align: left;
+  -webkit-tap-highlight-color: transparent;
+}
+button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--r-sm);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   HOME SCREEN
+   ═══════════════════════════════════════════════════════════ */
+#s-home { min-height: 100vh; }
+
+/* Soft decorative background */
+.home-bg {
+  position: fixed; inset: 0;
+  pointer-events: none; z-index: 0; overflow: hidden;
+}
+.home-bg::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 80% 50% at 20% -10%, rgba(91,155,106,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 100%, rgba(74,144,217,0.06) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 30% at 60% 40%, rgba(155,107,181,0.05) 0%, transparent 60%);
+}
+
+/* Top nav bar */
+.home-nav {
+  position: relative; z-index: 10;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.25rem 2.5rem;
+  background: rgba(247,245,242,0.85);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+}
+.logo { display: flex; align-items: center; gap: 10px; }
+.logo-icon {
+  width: 38px; height: 38px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; flex-shrink: 0;
+  box-shadow: 0 4px 12px var(--accent-glow);
+}
+.logo-text {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 900; font-size: 20px; letter-spacing: -0.02em; color: var(--text);
+}
+.logo-text span { color: var(--accent); }
+.beta-badge {
+  font-family: 'Nunito', sans-serif;
+  font-size: 10px; font-weight: 800; letter-spacing: 0.06em;
+  background: var(--accent-light);
+  color: var(--accent2); padding: 3px 10px; border-radius: 20px;
+  text-transform: uppercase;
+}
+
+/* Hero */
+.hero {
+  position: relative; z-index: 5;
+  max-width: 1100px; margin: 0 auto;
+  padding: 4rem 2.5rem 2.5rem;
+}
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 12px; font-weight: 800; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 1.25rem;
+  background: var(--accent-dim); padding: 5px 14px; border-radius: 20px;
+}
+.hero h1 {
+  font-family: 'Lora', serif;
+  font-size: clamp(38px, 5vw, 62px);
+  line-height: 1.1; letter-spacing: -0.01em; margin-bottom: 1rem; font-weight: 600;
+}
+.hero h1 em { font-style: italic; color: var(--accent); }
+.hero-sub {
+  font-size: 16px; color: var(--text-muted);
+  max-width: 460px; line-height: 1.7; margin-bottom: 2.5rem;
+}
+.hero-stats { display: flex; gap: 2rem; margin-bottom: 3.5rem; flex-wrap: wrap; }
+.hero-stat {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 1rem 1.5rem;
+  box-shadow: var(--shadow-sm);
+}
+.hero-stat-num {
+  font-family: 'Nunito', sans-serif;
+  font-size: 26px; font-weight: 900; color: var(--accent); line-height: 1;
+}
+.hero-stat-label { font-size: 12px; color: var(--text-muted); margin-top: 3px; font-weight: 500; }
+
+/* Section label */
+.section-label {
+  position: relative; z-index: 5;
+  max-width: 1100px; margin: 0 auto 1.25rem;
+  padding: 0 2.5rem;
+  display: flex; align-items: center; gap: 14px;
+}
+.section-label span {
+  font-family: 'Nunito', sans-serif;
+  font-size: 12px; font-weight: 800; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--text-faint); white-space: nowrap;
+}
+.section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+/* Course Grid */
+.course-grid {
+  position: relative; z-index: 5;
+  max-width: 1100px; margin: 0 auto;
+  padding: 0 2.5rem 4rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+/* Course Card */
+.course-card {
+  position: relative;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-xl);
+  padding: 1.75rem 1.75rem 4.25rem;
+  overflow: hidden;
+  display: block; width: 100%;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.25s cubic-bezier(0.23,1,0.32,1),
+              border-color 0.2s ease,
+              box-shadow 0.2s ease;
+}
+.course-card.available { cursor: pointer; }
+.course-card.available:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+.course-card.locked { cursor: default; opacity: 0.65; }
+
+.course-card-top {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+.course-icon {
+  width: 54px; height: 54px; border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px; flex-shrink: 0;
+}
+.course-icon.world  { background: var(--world-light);  }
+.course-icon.bio    { background: var(--bio-light);    }
+.course-icon.psych  { background: var(--psych-light);  }
+.course-icon.calc   { background: var(--calc-light);   }
+
+.course-status {
+  font-family: 'Nunito', sans-serif;
+  font-size: 10px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 4px 11px; border-radius: 20px; flex-shrink: 0;
+}
+.status-live { background: var(--green-dim); color: var(--green); border: 1.5px solid rgba(58,140,82,0.2); }
+.status-soon { background: var(--amber-dim); color: var(--amber); border: 1.5px solid rgba(212,144,43,0.2); }
+
+.course-subject {
+  font-family: 'Nunito', sans-serif;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase;
+  color: var(--text-faint); margin-bottom: 4px;
+}
+.course-name {
+  font-family: 'Nunito', sans-serif;
+  font-size: 19px; font-weight: 800; line-height: 1.2; margin-bottom: 8px;
+}
+.course-desc { font-size: 13px; color: var(--text-muted); line-height: 1.6; margin-bottom: 1.25rem; }
+.course-meta { display: flex; gap: 6px; flex-wrap: wrap; }
+.course-tag {
+  font-size: 11px; font-weight: 600;
+  border: 1.5px solid var(--border); border-radius: 8px;
+  padding: 3px 9px; color: var(--text-muted); background: var(--surface2);
+}
+
+/* Coloured accent stripe at bottom of live cards */
+.course-card.available .course-stripe {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 4px;
+}
+.stripe-world { background: linear-gradient(90deg, var(--world-accent), #7EC897); }
+.stripe-bio   { background: linear-gradient(90deg, var(--bio-accent),   #7AB8E8); }
+.stripe-psych { background: linear-gradient(90deg, var(--psych-accent), #C09DD8); }
+.stripe-calc  { background: linear-gradient(90deg, var(--calc-accent),  #EAA87A); }
+
+.course-enter {
+  position: absolute; bottom: 1.5rem; right: 1.75rem;
+  width: 36px; height: 36px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; font-weight: 700;
+  transition: transform 0.15s ease;
+  pointer-events: none;
+}
+.enter-world { background: var(--world-light); color: var(--world-accent); }
+.enter-bio   { background: var(--bio-light);   color: var(--bio-accent); }
+.enter-psych { background: var(--psych-light); color: var(--psych-accent); }
+.enter-calc  { background: var(--calc-light);  color: var(--calc-accent); }
+.course-card.available:hover .course-enter { transform: scale(1.12) rotate(8deg); }
+
+/* Home footer */
+.home-footer {
+  position: relative; z-index: 5;
+  border-top: 1px solid var(--border);
+  padding: 1.25rem 2.5rem;
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--surface);
+}
+.footer-left { font-size: 12px; color: var(--text-faint); display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.footer-right { font-family: 'Nunito', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.04em; color: var(--text-faint); }
+.pulse-dot {
+  display: inline-block; width: 7px; height: 7px; border-radius: 50%;
+  background: var(--accent);
+  animation: pulseDot 2s ease-in-out infinite;
+}
+@keyframes pulseDot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.75)} }
+
+/* Staggered fade-up */
+.fade-up {
+  opacity: 0; transform: translateY(16px);
+  animation: fadeUp 0.4s ease forwards;
+}
+.fade-up:nth-child(1){animation-delay:.04s} .fade-up:nth-child(2){animation-delay:.10s}
+.fade-up:nth-child(3){animation-delay:.16s} .fade-up:nth-child(4){animation-delay:.22s}
+.fade-up:nth-child(5){animation-delay:.28s} .fade-up:nth-child(6){animation-delay:.34s}
+@keyframes fadeUp { to { opacity:1; transform:translateY(0); } }
+
+/* ═══════════════════════════════════════════════════════════
+   MODAL
+   ═══════════════════════════════════════════════════════════ */
+#modal-overlay {
+  display: none;
+  position: fixed; inset: 0; z-index: 500;
+  background: rgba(44,40,37,0.45);
+  backdrop-filter: blur(10px);
+  align-items: center; justify-content: center;
+  padding: 1rem;
+}
+.modal-box {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-xl);
+  padding: 2rem;
+  width: 100%; max-width: 460px;
+  box-shadow: var(--shadow-lg);
+  animation: fadeUp 0.22s ease;
+}
+.modal-title {
+  font-family: 'Lora', serif;
+  font-size: 22px; margin-bottom: 4px; font-weight: 600;
+}
+.modal-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 1.75rem; }
+.modal-option {
+  display: flex; align-items: center; gap: 14px;
+  width: 100%; padding: 1rem 1.125rem;
+  background: var(--surface2); border: 1.5px solid var(--border);
+  border-radius: var(--r); margin-bottom: 10px; cursor: pointer;
+  transition: border-color 0.14s ease, background 0.14s ease;
+  text-align: left; color: var(--text);
+}
+.modal-option:hover { border-color: var(--modal-accent, var(--accent)); background: var(--modal-bg, var(--accent-dim)); }
+.modal-option-icon { font-size: 26px; flex-shrink: 0; }
+.modal-option-label { font-family: 'Nunito', sans-serif; font-size: 14px; font-weight: 800; margin-bottom: 2px; }
+.modal-option-meta { font-size: 12px; color: var(--text-muted); }
+.modal-option-arrow { margin-left: auto; font-size: 18px; transition: transform 0.14s ease; flex-shrink: 0; }
+.modal-option:hover .modal-option-arrow { transform: translateX(4px); }
+.modal-cancel {
+  width: 100%; margin-top: 1rem; padding: 10px;
+  background: transparent; border: 1.5px solid var(--border); border-radius: var(--r-sm);
+  color: var(--text-muted); font-size: 13px; font-weight: 600; cursor: pointer;
+  transition: border-color 0.12s, color 0.12s;
+}
+.modal-cancel:hover { border-color: var(--border-bright); color: var(--text); }
+
+/* ═══════════════════════════════════════════════════════════
+   EXAM NAV BAR
+   ═══════════════════════════════════════════════════════════ */
+#exam-nav {
+  display: none;
+  position: sticky; top: 0; z-index: 100;
+  align-items: center; justify-content: space-between;
+  height: 58px; padding: 0 2rem;
+  background: rgba(247,245,242,0.94);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+#exam-nav.visible { display: flex; }
+.back-btn {
+  display: flex; align-items: center; gap: 7px;
+  font-size: 13px; font-weight: 600;
+  color: var(--text-muted); background: var(--surface2);
+  border: 1.5px solid var(--border); border-radius: var(--r-sm);
+  padding: 7px 14px; cursor: pointer;
+  transition: color 0.12s, border-color 0.12s;
+}
+.back-btn:hover { color: var(--text); border-color: var(--border-bright); }
+.exam-nav-title { font-family: 'Nunito', sans-serif; font-size: 14px; color: var(--text-muted); font-weight: 700; }
+.exam-nav-title b { color: var(--text); }
+.exam-timer {
+  font-family: 'Nunito', sans-serif;
+  font-size: 19px; font-weight: 900; letter-spacing: 0.02em;
+  background: var(--surface2); border: 1.5px solid var(--border);
+  border-radius: var(--r-sm); padding: 5px 16px; min-width: 100px; text-align: center;
+  transition: color 0.3s, border-color 0.3s, background 0.3s;
+}
+.exam-timer.urgent { color: var(--red); border-color: rgba(192,69,58,0.35); background: var(--red-dim); animation: timerPulse 1s ease-in-out infinite; }
+@keyframes timerPulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
+
+/* ═══════════════════════════════════════════════════════════
+   MCQ SCREEN
+   ═══════════════════════════════════════════════════════════ */
+.exam-body { max-width: 820px; margin: 0 auto; padding: 2rem 1.5rem 5rem; }
+.mcq-progress { margin-bottom: 1.75rem; }
+.mcq-progress-info {
+  display: flex; justify-content: space-between;
+  font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 700;
+  color: var(--text-muted); margin-bottom: 8px;
+}
+.mcq-progress-bar { height: 6px; background: var(--surface3); border-radius: 3px; overflow: hidden; }
+.mcq-progress-fill {
+  height: 100%; border-radius: 3px;
+  transition: width 0.35s ease;
+}
+.fill-world { background: linear-gradient(90deg, var(--world-accent), #7EC897); }
+.fill-bio   { background: linear-gradient(90deg, var(--bio-accent),   #7AB8E8); }
+.fill-psych { background: linear-gradient(90deg, var(--psych-accent), #C09DD8); }
+.fill-calc  { background: linear-gradient(90deg, var(--calc-accent),  #EAA87A); }
+
+/* Stimulus block */
+.stimulus {
+  background: var(--surface);
+  border: 1.5px solid var(--border); border-left: 4px solid var(--course-accent, var(--accent));
+  border-radius: 0 var(--r) var(--r) 0;
+  padding: 1rem 1.25rem; margin-bottom: 1.25rem;
+  font-size: 14px; line-height: 1.75;
+  color: var(--text-muted); font-style: italic;
+  box-shadow: var(--shadow-sm);
+}
+.stimulus-attr {
+  font-family: 'Nunito', sans-serif;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase;
+  color: var(--text-faint); margin-top: 10px; font-style: normal;
+}
+.set-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 11px; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase;
+  padding: 4px 12px; border-radius: 20px; margin-bottom: 1rem;
+}
+.badge-world { background: var(--world-light); color: var(--world-accent); }
+.badge-bio   { background: var(--bio-light);   color: var(--bio-accent); }
+.badge-psych { background: var(--psych-light); color: var(--psych-accent); }
+.badge-calc  { background: var(--calc-light);  color: var(--calc-accent); }
+
+.qcard {
+  background: var(--surface); border: 1.5px solid var(--border);
+  border-radius: var(--r-xl); padding: 1.5rem; margin-bottom: 1rem;
+  box-shadow: var(--shadow-sm);
+}
+.qnum {
+  font-family: 'Nunito', sans-serif;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--text-faint); margin-bottom: 10px;
+}
+.qtext { font-size: 16px; line-height: 1.65; margin-bottom: 1.25rem; font-weight: 500; }
+.choices { display: flex; flex-direction: column; gap: 8px; }
+.choice {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 13px 16px; border-radius: var(--r);
+  background: var(--surface2); border: 1.5px solid var(--border);
+  cursor: pointer; text-align: left; color: var(--text);
+  transition: border-color 0.12s, background 0.12s;
+  width: 100%;
+}
+.choice:hover:not(:disabled) { border-color: var(--course-accent, var(--accent)); background: var(--course-light, var(--accent-dim)); }
+.choice.selected { border-color: var(--course-accent, var(--accent)); background: var(--course-light, var(--accent-dim)); box-shadow: 0 0 0 1px var(--course-accent, var(--accent)) inset; }
+.choice.selected .choice-letter { color: var(--course-accent, var(--accent)); }
+.choice.correct { border-color: var(--green); background: var(--green-dim); }
+.choice.correct .choice-letter, .choice.correct .choice-text { color: var(--green); }
+.choice.wrong   { border-color: var(--red);   background: var(--red-dim); }
+.choice.wrong .choice-letter,  .choice.wrong .choice-text   { color: var(--red); }
+.choice:disabled { cursor: default; }
+.choice-letter {
+  font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 800;
+  min-width: 22px; color: var(--text-faint); flex-shrink: 0; margin-top: 1px;
+}
+.choice-text { font-size: 14px; line-height: 1.55; }
+
+.nav-row { display: flex; align-items: center; justify-content: space-between; margin-top: 1rem; gap: 10px; }
+
+/* Buttons */
+.btn {
+  font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 800; letter-spacing: 0.01em;
+  background: var(--surface2); color: var(--text-muted);
+  border: 1.5px solid var(--border); border-radius: var(--r-sm);
+  padding: 10px 22px; cursor: pointer;
+  transition: color 0.12s, border-color 0.12s, background 0.12s;
+}
+.btn:hover { color: var(--text); border-color: var(--border-bright); background: var(--surface3); }
+.btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.btn-accent {
+  color: #fff; border-color: transparent;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+}
+.btn-accent:hover { filter: brightness(1.08); }
+.btn-world { background: var(--world-accent); }
+.btn-bio   { background: var(--bio-accent); }
+.btn-psych { background: var(--psych-accent); }
+.btn-calc  { background: var(--calc-accent); }
+.btn-block { width: 100%; display: block; text-align: center; padding: 13px; font-size: 14px; }
+
+/* ═══════════════════════════════════════════════════════════
+   MCQ RESULTS
+   ═══════════════════════════════════════════════════════════ */
+.results-card {
+  background: var(--surface); border: 1.5px solid var(--border);
+  border-radius: var(--r-xl); padding: 1.5rem; margin-bottom: 1rem;
+  box-shadow: var(--shadow-sm);
+}
+.results-hero { text-align: center; padding: 2rem 0 1.5rem; }
+.results-score {
+  font-family: 'Lora', serif; font-size: 80px; line-height: 1; margin-bottom: 8px; font-weight: 600;
+}
+.results-raw { font-size: 16px; color: var(--text-muted); margin-bottom: 1rem; }
+.results-band {
+  display: inline-block;
+  font-family: 'Nunito', sans-serif; font-size: 14px; font-weight: 800;
+  padding: 8px 24px; border-radius: 30px; margin-bottom: 1rem;
+}
+.results-note { font-size: 13px; color: var(--text-faint); max-width: 400px; margin: 0 auto; }
+.results-card-title {
+  font-family: 'Nunito', sans-serif;
+  font-size: 12px; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase;
+  color: var(--text-faint); margin-bottom: 1rem;
+}
+.period-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px;
+}
+.period-row:last-child { border-bottom: none; }
+.period-score { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 13px; }
+.rev-item {
+  background: var(--surface2); border: 1.5px solid var(--border);
+  border-radius: var(--r); padding: 1rem 1.125rem; margin-bottom: 0.6rem; font-size: 14px;
+}
+.rev-q  { font-weight: 500; margin-bottom: 6px; line-height: 1.5; }
+.rev-ok  { font-size: 13px; font-weight: 700; color: var(--green); }
+.rev-bad { font-size: 13px; font-weight: 700; color: var(--red); }
+.rev-ans { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+.divider { height: 1px; background: var(--border); margin: 1.5rem 0; }
+
+/* ═══════════════════════════════════════════════════════════
+   WRITING SCREEN
+   ═══════════════════════════════════════════════════════════ */
+.writing-tabs { display: flex; gap: 8px; margin-bottom: 1.75rem; flex-wrap: wrap; }
+.wtab {
+  font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 800;
+  padding: 9px 20px; border-radius: 30px;
+  background: var(--surface2); color: var(--text-muted);
+  border: 1.5px solid var(--border); cursor: pointer;
+  transition: all 0.12s;
+}
+.wtab:hover { color: var(--text); border-color: var(--border-bright); }
+.wtab.active { color: #fff; border-color: transparent; box-shadow: 0 3px 10px rgba(0,0,0,0.15); }
+.wtab-world.active { background: var(--world-accent); }
+.wtab-bio.active   { background: var(--bio-accent); }
+.wtab-psych.active { background: var(--psych-accent); }
+.wtab-calc.active  { background: var(--calc-accent); }
+.wtab.graded { background: var(--green-dim); border-color: rgba(58,140,82,0.3); color: var(--green); }
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+.writing-heading { font-family: 'Lora', serif; font-size: 26px; margin-bottom: 4px; font-weight: 600; }
+.writing-sub {
+  display: flex; flex-wrap: wrap; gap: 0;
+  font-size: 13px; color: var(--text-muted); margin-bottom: 1.75rem;
+}
+.writing-sub-item { padding-right: 14px; }
+.writing-sub-item + .writing-sub-item { border-left: 1px solid var(--border); padding-left: 14px; }
+
+.prompt-box {
+  background: var(--surface); border: 1.5px solid var(--border);
+  border-radius: var(--r); padding: 1.25rem 1.5rem; margin-bottom: 1.25rem;
+  font-size: 14px; line-height: 1.8; box-shadow: var(--shadow-sm);
+}
+.prompt-box h4 {
+  font-family: 'Nunito', sans-serif;
+  font-size: 10px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--text-faint); margin-bottom: 10px;
+}
+.rubric-box {
+  border-radius: var(--r-sm); padding: 0.875rem 1.25rem; margin-bottom: 1.25rem;
+  font-size: 13px; line-height: 1.8; color: var(--text-muted); border-left: 4px solid;
+}
+.rubric-world { background: rgba(91,155,106,0.06);  border-color: var(--world-accent); }
+.rubric-bio   { background: rgba(74,144,217,0.06);  border-color: var(--bio-accent); }
+.rubric-psych { background: rgba(155,107,181,0.06); border-color: var(--psych-accent); }
+.rubric-calc  { background: rgba(217,123,74,0.06);  border-color: var(--calc-accent); }
+.rubric-box strong { color: var(--text); }
+
+textarea {
+  width: 100%;
+  background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--r-sm);
+  padding: 1rem 1.125rem;
+  font-size: 14px; line-height: 1.75; resize: vertical;
+  color: var(--text); font-family: 'Inter', sans-serif;
+  transition: border-color 0.12s, box-shadow 0.12s;
+}
+textarea:focus { outline: none; border-color: var(--course-accent, var(--accent)); box-shadow: 0 0 0 3px var(--course-glow, var(--accent-dim)); }
+.wc-row {
+  display: flex; justify-content: flex-end;
+  font-family: 'Nunito', sans-serif; font-size: 11px; font-weight: 700;
+  color: var(--text-faint); margin: 6px 0 1.25rem;
+}
+
+.leq-opt {
+  display: flex; gap: 12px; align-items: flex-start;
+  padding: 1rem 1.25rem;
+  border: 1.5px solid var(--border); border-radius: var(--r-sm);
+  background: var(--surface2); margin-bottom: 10px; cursor: pointer;
+  transition: border-color 0.12s, background 0.12s;
+}
+.leq-opt:hover { border-color: var(--course-accent, var(--accent)); background: var(--course-light, var(--accent-dim)); }
+.leq-opt input[type="radio"] { accent-color: var(--accent); width: 16px; height: 16px; flex-shrink: 0; margin-top: 3px; cursor: pointer; }
+.leq-opt-text { font-size: 14px; line-height: 1.6; }
+.leq-hint { font-size: 13px; color: var(--text-faint); font-style: italic; padding: 10px 14px; background: var(--surface2); border-radius: var(--r-sm); margin-bottom: 10px; }
+
+/* Feedback Card */
+.feedback-card {
+  background: var(--surface); border: 1.5px solid var(--border);
+  border-radius: var(--r-xl); padding: 1.5rem; margin-top: 1.25rem;
+  box-shadow: var(--shadow-sm);
+}
+.fb-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap;
+}
+.fb-score-num { font-family: 'Lora', serif; font-size: 52px; line-height: 1; font-weight: 600; }
+.fb-score-label { font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 700; color: var(--text-muted); margin-top: 4px; }
+.fb-overall { font-size: 14px; color: var(--text-muted); line-height: 1.65; max-width: 380px; border-left: 2px solid var(--border); padding-left: 16px; }
+.fb-breakdown { border-top: 1px solid var(--border); padding-top: 1.25rem; }
+.fb-row { display: flex; align-items: flex-start; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.fb-row:last-child { border-bottom: none; }
+.fb-label { font-family: 'Nunito', sans-serif; font-size: 12px; font-weight: 700; color: var(--text-muted); flex-shrink: 0; width: 140px; }
+.fb-note  { color: var(--text-muted); flex: 1; line-height: 1.5; }
+.fb-pill  { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 20px; font-family: 'Nunito', sans-serif; font-size: 11px; font-weight: 800; white-space: nowrap; flex-shrink: 0; }
+.pill-pass { background: var(--green-dim); color: var(--green); border: 1px solid rgba(58,140,82,0.2); }
+.pill-fail { background: var(--red-dim);   color: var(--red);   border: 1px solid rgba(192,69,58,0.2); }
+
+.loading-state { text-align: center; padding: 2rem; color: var(--text-muted); font-size: 15px; }
+.spinner { width: 32px; height: 32px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; margin: 0 auto 1rem; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Responsive ─────────────────────────────────────────── */
+@media (max-width: 700px) {
+  .home-nav    { padding: 1rem 1.25rem; }
+  .hero        { padding: 2.5rem 1.25rem 1.5rem; }
+  .section-label, .course-grid { padding-left: 1.25rem; padding-right: 1.25rem; }
+  .home-footer { padding: 1rem 1.25rem; flex-direction: column; gap: 8px; text-align: center; }
+  .exam-body   { padding: 1.25rem 1rem 3rem; }
+  #exam-nav    { padding: 0 1rem; }
+  .modal-box   { padding: 1.5rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════
+     HOME SCREEN
+     ══════════════════════════════════════════════════════════ -->
+<div id="s-home" class="screen active">
+  <div class="home-bg" aria-hidden="true"></div>
+
+  <nav class="home-nav">
+    <div class="logo">
+      <div class="logo-icon" aria-hidden="true">🦗</div>
+      <div class="logo-text">Cricket<span>-</span>Cram</div>
+      <div class="beta-badge">Beta</div>
+    </div>
+    <span style="font-family:'Nunito',sans-serif;font-size:11px;font-weight:700;color:var(--text-faint);letter-spacing:.04em">Ver 0.1.0</span>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-eyebrow fade-up">✦ AP Exam Study Platform</div>
+    <h1 class="fade-up">Study <em>smarter.</em><br>Score higher.</h1>
+    <p class="hero-sub fade-up">Full mock exams with AI-powered essay grading — built for AP students who mean business. Four courses, fully loaded.</p>
+    <div class="hero-stats fade-up">
+      <div class="hero-stat"><div class="hero-stat-num">4</div><div class="hero-stat-label">Courses live</div></div>
+      <div class="hero-stat"><div class="hero-stat-num">MCQ</div><div class="hero-stat-label">Practice sets</div></div>
+      <div class="hero-stat"><div class="hero-stat-num">AI</div><div class="hero-stat-label">Essay grading</div></div>
+    </div>
+  </div>
+
+  <div class="section-label fade-up"><span>Choose your course</span></div>
+
+  <div class="course-grid">
+
+    <!-- AP WORLD HISTORY — LIVE -->
+    <button class="course-card available fade-up" onclick="openModal('world')" aria-label="Open AP World History: Modern">
+      <div class="course-card-top">
+        <div class="course-icon world" aria-hidden="true">🌍</div>
+        <div class="course-status status-live">Live</div>
+      </div>
+      <div class="course-subject">AP History</div>
+      <div class="course-name">World History:<br>Modern</div>
+      <div class="course-desc">Full mock exam covering Periods 1–4 (1200–present). MCQ, SAQ, DBQ, and LEQ with live AI grading.</div>
+      <div class="course-meta">
+        <span class="course-tag">55 MCQ</span>
+        <span class="course-tag">SAQ · DBQ · LEQ</span>
+        <span class="course-tag">AI Graded</span>
+      </div>
+      <div class="course-stripe stripe-world"></div>
+      <div class="course-enter enter-world" aria-hidden="true">↗</div>
+    </button>
+
+    <!-- AP BIOLOGY — LIVE -->
+    <button class="course-card available fade-up" onclick="openModal('bio')" aria-label="Open AP Biology">
+      <div class="course-card-top">
+        <div class="course-icon bio" aria-hidden="true">🧬</div>
+        <div class="course-status status-live">Live</div>
+      </div>
+      <div class="course-subject">AP Science</div>
+      <div class="course-name">Biology</div>
+      <div class="course-desc">Practice MCQ covering all 8 units plus AI-graded FRQ covering experimental design, data analysis, and core concepts.</div>
+      <div class="course-meta">
+        <span class="course-tag">MCQ</span>
+        <span class="course-tag">FRQ</span>
+        <span class="course-tag">AI Graded</span>
+      </div>
+      <div class="course-stripe stripe-bio"></div>
+      <div class="course-enter enter-bio" aria-hidden="true">↗</div>
+    </button>
+
+    <!-- AP PSYCHOLOGY — LIVE -->
+    <button class="course-card available fade-up" onclick="openModal('psych')" aria-label="Open AP Psychology">
+      <div class="course-card-top">
+        <div class="course-icon psych" aria-hidden="true">🧠</div>
+        <div class="course-status status-live">Live</div>
+      </div>
+      <div class="course-subject">AP Science</div>
+      <div class="course-name">Psychology</div>
+      <div class="course-desc">Practice MCQ across all 9 content areas plus AI-graded FRQ covering research methods, behavior, and concepts.</div>
+      <div class="course-meta">
+        <span class="course-tag">MCQ</span>
+        <span class="course-tag">FRQ</span>
+        <span class="course-tag">AI Graded</span>
+      </div>
+      <div class="course-stripe stripe-psych"></div>
+      <div class="course-enter enter-psych" aria-hidden="true">↗</div>
+    </button>
+
+    <!-- AP PRECALCULUS — LIVE -->
+    <button class="course-card available fade-up" onclick="openModal('calc')" aria-label="Open AP Precalculus">
+      <div class="course-card-top">
+        <div class="course-icon calc" aria-hidden="true">📐</div>
+        <div class="course-status status-live">Live</div>
+      </div>
+      <div class="course-subject">AP Mathematics</div>
+      <div class="course-name">Precalculus</div>
+      <div class="course-desc">Practice MCQ on functions, polynomials, trig, and more, plus AI-graded FRQ with step-by-step feedback.</div>
+      <div class="course-meta">
+        <span class="course-tag">MCQ</span>
+        <span class="course-tag">FRQ</span>
+        <span class="course-tag">AI Graded</span>
+      </div>
+      <div class="course-stripe stripe-calc"></div>
+      <div class="course-enter enter-calc" aria-hidden="true">↗</div>
+    </button>
+
+  </div>
+
+  <footer class="home-footer">
+    <div class="footer-left">
+      <span><span class="pulse-dot"></span>&nbsp; 4 courses live</span>
+      <span style="color:var(--border)">|</span>
+      <span>More courses arriving soon</span>
+    </div>
+    <div class="footer-right">Cricket-Cram &nbsp;·&nbsp; Beta Ver 0.1.0 &nbsp;·&nbsp; Built for AP Students</div>
+  </footer>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     MODAL — Course / Section Selection
+     ══════════════════════════════════════════════════════════ -->
+<div id="modal-overlay" role="dialog" aria-modal="true" onclick="handleOverlayClick(event)">
+  <div class="modal-box" id="modal-box">
+    <div id="modal-heading" class="modal-title">Select a Section</div>
+    <div class="modal-sub" id="modal-sub">Choose which section you'd like to study</div>
+    <div id="modal-options"></div>
+    <button class="modal-cancel" onclick="closeModal()">Cancel</button>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     STICKY EXAM NAV BAR
+     ══════════════════════════════════════════════════════════ -->
+<nav id="exam-nav" aria-label="Exam navigation">
+  <div style="display:flex;align-items:center;gap:12px">
+    <button class="back-btn" onclick="goHome()">← Back to courses</button>
+    <div class="exam-nav-title" id="exam-nav-title">Exam</div>
+  </div>
+  <div class="exam-timer" id="exam-timer">--:--</div>
+</nav>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     MCQ SCREEN (shared by all courses)
+     ══════════════════════════════════════════════════════════ -->
+<div id="s-mcq" class="screen">
+  <div class="exam-body">
+    <div class="mcq-progress">
+      <div class="mcq-progress-info">
+        <span id="q-counter">Question 1</span>
+        <span id="q-answered">0 answered</span>
+      </div>
+      <div class="mcq-progress-bar">
+        <div class="mcq-progress-fill" id="progress-fill" style="width:2%"></div>
+      </div>
+    </div>
+    <div id="q-area"></div>
+    <div class="nav-row">
+      <button class="btn" id="btn-prev" onclick="mcqNav(-1)">← Previous</button>
+      <button class="btn" id="btn-next" onclick="mcqNav(1)">Next →</button>
+    </div>
+    <div style="margin-top:1rem;text-align:center">
+      <button class="btn btn-accent btn-block" id="btn-mcq-submit" onclick="submitMCQ()" style="display:none;max-width:360px;margin:0 auto">
+        Submit &amp; see score →
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     MCQ RESULTS SCREEN
+     ══════════════════════════════════════════════════════════ -->
+<div id="s-mcq-results" class="screen">
+  <div class="exam-body">
+    <div class="results-card">
+      <div class="results-hero">
+        <div class="results-score" id="r-pct">--%</div>
+        <div class="results-raw" id="r-raw">-- correct</div>
+        <div><span class="results-band" id="r-band">--</span></div>
+        <p class="results-note" id="r-note">MCQ is a major component of your AP score.</p>
+      </div>
+      <div class="divider"></div>
+      <div class="results-card-title" id="r-breakdown-title">Performance breakdown</div>
+      <div id="r-breakdown"></div>
+    </div>
+    <div class="results-card">
+      <div class="results-card-title">Full answer review</div>
+      <div id="r-review"></div>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:.5rem">
+      <button class="btn" onclick="retakeMCQ()">↺ Retake MCQ</button>
+      <button class="btn btn-accent" id="results-home-btn" onclick="goHome()">Back to courses</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     WRITING SCREEN — AP WORLD HISTORY
+     ══════════════════════════════════════════════════════════ -->
+<div id="s-writing-world" class="screen">
+  <div class="exam-body">
+    <div class="writing-tabs" role="tablist">
+      <button class="wtab wtab-world active" id="tab-world-saq" role="tab" aria-selected="true"  onclick="showWritingTab('world','saq')">Short Answer (SAQ)</button>
+      <button class="wtab wtab-world"        id="tab-world-dbq" role="tab" aria-selected="false" onclick="showWritingTab('world','dbq')">Document-Based (DBQ)</button>
+      <button class="wtab wtab-world"        id="tab-world-leq" role="tab" aria-selected="false" onclick="showWritingTab('world','leq')">Long Essay (LEQ)</button>
+    </div>
+
+    <!-- SAQ -->
+    <div class="tab-content active" id="tc-world-saq">
+      <div class="writing-heading">Short Answer Question</div>
+      <div class="writing-sub">
+        <span class="writing-sub-item">3 parts (a, b, c)</span>
+        <span class="writing-sub-item">No thesis required</span>
+        <span class="writing-sub-item">~40 min suggested</span>
+        <span class="writing-sub-item">20% of exam score</span>
+      </div>
+      <div class="prompt-box">
+        <h4>Stimulus &amp; Prompt</h4>
+        <p><em>"The period from 1450 to 1750 witnessed a dramatic expansion of global trade networks, facilitated by European maritime exploration. These networks transferred not only goods but also people, plants, animals, and diseases across previously isolated regions, transforming societies on every inhabited continent."</em></p><br>
+        <p>Using the passage and your knowledge of world history, answer parts (a), (b), and (c).</p><br>
+        <p><strong>(a)</strong> Briefly describe ONE specific historical development that contributed to the expansion of global trade networks in the period 1450–1750.</p><br>
+        <p><strong>(b)</strong> Briefly explain ONE specific effect of the expansion of global trade networks on a society <em>outside of Europe</em> in the period 1450–1750.</p><br>
+        <p><strong>(c)</strong> Briefly explain ONE way the expansion of global trade networks in the period 1450–1750 represents a <em>continuity</em> with trade patterns from 1200–1450.</p>
+      </div>
+      <div class="rubric-box rubric-world">
+        <strong>Official Rubric — 3 pts (1 per part):</strong> Each response must include a specific, historically accurate development or explanation. General claims without specific evidence earn no credit.
+      </div>
+      <textarea id="world-saq-ans" rows="11" placeholder="Label each part — (a), (b), (c). Write 2–4 specific sentences per part." oninput="updateWC('world-saq')"></textarea>
+      <div class="wc-row" id="world-saq-wc">0 words</div>
+      <div id="world-saq-fb"></div>
+      <button class="btn btn-accent btn-world" id="world-saq-btn" onclick="gradeEssay('world','saq')">Grade my SAQ ↗</button>
+    </div>
+
+    <!-- DBQ -->
+    <div class="tab-content" id="tc-world-dbq">
+      <div class="writing-heading">Document-Based Question</div>
+      <div class="writing-sub">
+        <span class="writing-sub-item">Use 6 of 7 documents</span>
+        <span class="writing-sub-item">~60 min suggested</span>
+        <span class="writing-sub-item">25% of exam score</span>
+      </div>
+      <div class="prompt-box">
+        <h4>Prompt</h4>
+        <p><strong>Evaluate the extent to which the Industrial Revolution transformed social and economic structures in the period 1750–1900.</strong></p><br>
+        <h4>Documents</h4>
+        <p><strong>Doc 1 — Andrew Ure, <em>The Philosophy of Manufactures</em>, 1835:</strong> "The factory system raises the condition of all who participate in its benefits. Children in factories are treated with great kindness and given regular meals and a structured routine."</p><br>
+        <p><strong>Doc 2 — Parliamentary testimony, English mill worker, 1832:</strong> "I have worked in the mill since I was seven. We begin at five in the morning and work until eight at night. The overlooker beats us if we fall asleep."</p><br>
+        <p><strong>Doc 3 — Friedrich Engels, <em>The Condition of the Working Class in England</em>, 1845:</strong> "Workers live in filth, crowded into dark damp cellars. The great industrial towns are sinks of human suffering."</p><br>
+        <p><strong>Doc 4 — Edwin Chadwick, <em>Report on Sanitary Conditions</em>, 1842:</strong> "The annual loss of life from filth and poor ventilation in industrial districts exceeds the loss from any wars in which Britain has engaged in modern times."</p><br>
+        <p><strong>Doc 5 — Samuel Smiles, <em>Self-Help</em>, 1859:</strong> "The spirit of self-help is the root of all genuine growth. The road to advancement lies open to all — industry and perseverance determine a man's station."</p><br>
+        <p><strong>Doc 6 — Karl Marx &amp; Friedrich Engels, <em>The Communist Manifesto</em>, 1848:</strong> "The history of all hitherto existing society is the history of class struggles. The bourgeoisie has left no bond between man and man than naked self-interest."</p><br>
+        <p><strong>Doc 7 — Japanese government commission report, 1890:</strong> "The Western nations have grown powerful through adoption of machinery and the factory system. Japan must industrialize or risk becoming a colony of the industrial powers."</p>
+      </div>
+      <div class="rubric-box rubric-world">
+        <strong>Official Rubric — 7 pts:</strong><br>
+        <strong>Thesis (1)</strong> — Defensible claim + line of reasoning.<br>
+        <strong>Contextualization (1)</strong> — Broader historical context meaningfully connected.<br>
+        <strong>Document Evidence (2)</strong> — ≥3 docs address topic (1pt); ≥6 docs support argument (2pts).<br>
+        <strong>Outside Evidence (1)</strong> — Specific evidence beyond the documents.<br>
+        <strong>Sourcing/HAPP (1)</strong> — Historical situation, audience, purpose, or POV for ≥3 docs.<br>
+        <strong>Complexity (1)</strong> — Corroboration, qualification, or multiple causes/effects.
+      </div>
+      <textarea id="world-dbq-ans" rows="18" placeholder="Write your full DBQ essay: thesis, contextualization, document analysis with sourcing, outside evidence, and complexity." oninput="updateWC('world-dbq')"></textarea>
+      <div class="wc-row" id="world-dbq-wc">0 words</div>
+      <div id="world-dbq-fb"></div>
+      <button class="btn btn-accent btn-world" id="world-dbq-btn" onclick="gradeEssay('world','dbq')">Grade my DBQ ↗</button>
+    </div>
+
+    <!-- LEQ -->
+    <div class="tab-content" id="tc-world-leq">
+      <div class="writing-heading">Long Essay Question</div>
+      <div class="writing-sub">
+        <span class="writing-sub-item">Choose ONE prompt</span>
+        <span class="writing-sub-item">~40 min suggested</span>
+        <span class="writing-sub-item">15% of exam score</span>
+      </div>
+      <div class="prompt-box">
+        <h4>Select one prompt to answer</h4>
+        <label class="leq-opt">
+          <input type="radio" name="world-leq-prompt" value="1" onchange="setLEQ('world',1)">
+          <span class="leq-opt-text"><strong>Option 1 — c. 1200–1450:</strong> Evaluate the extent to which the Mongol Empire changed patterns of trade and cross-cultural exchange in Eurasia.</span>
+        </label>
+        <label class="leq-opt">
+          <input type="radio" name="world-leq-prompt" value="2" onchange="setLEQ('world',2)">
+          <span class="leq-opt-text"><strong>Option 2 — c. 1450–1750:</strong> Evaluate the extent to which the Columbian Exchange transformed the economies and societies of the Americas and Europe.</span>
+        </label>
+        <label class="leq-opt">
+          <input type="radio" name="world-leq-prompt" value="3" onchange="setLEQ('world',3)">
+          <span class="leq-opt-text"><strong>Option 3 — c. 1750–1900:</strong> Evaluate the extent to which nationalism drove political change in Europe and the Americas.</span>
+        </label>
+      </div>
+      <div class="rubric-box rubric-world">
+        <strong>Official Rubric — 6 pts:</strong><br>
+        <strong>Thesis (1)</strong> — Defensible claim with line of reasoning.<br>
+        <strong>Contextualization (1)</strong> — Broader historical context meaningfully related.<br>
+        <strong>Evidence (2)</strong> — Specific examples (1pt); used to support argument (2pts).<br>
+        <strong>Historical Reasoning (1)</strong> — Comparison, causation, or CCOT.<br>
+        <strong>Complexity (1)</strong> — Corroboration, qualification, or multiple causes/effects.
+      </div>
+      <div class="leq-hint" id="world-leq-hint">Select a prompt above before writing.</div>
+      <textarea id="world-leq-ans" rows="14" placeholder="Select a prompt above, then write your full essay here." oninput="updateWC('world-leq')"></textarea>
+      <div class="wc-row" id="world-leq-wc">0 words</div>
+      <div id="world-leq-fb"></div>
+      <button class="btn btn-accent btn-world" id="world-leq-btn" onclick="gradeEssay('world','leq')">Grade my LEQ ↗</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     WRITING SCREEN — AP BIOLOGY
+     ══════════════════════════════════════════════════════════ -->
+<div id="s-writing-bio" class="screen">
+  <div class="exam-body">
+    <div class="writing-tabs" role="tablist">
+      <button class="wtab wtab-bio active" id="tab-bio-frq1" role="tab" aria-selected="true"  onclick="showWritingTab('bio','frq1')">FRQ 1 — Experimental</button>
+      <button class="wtab wtab-bio"        id="tab-bio-frq2" role="tab" aria-selected="false" onclick="showWritingTab('bio','frq2')">FRQ 2 — Conceptual</button>
+    </div>
+
+    <!-- FRQ 1 -->
+    <div class="tab-content active" id="tc-bio-frq1">
+      <div class="writing-heading">Free Response — Experimental Design</div>
+      <div class="writing-sub">
+        <span class="writing-sub-item">Long FRQ</span>
+        <span class="writing-sub-item">~25 min suggested</span>
+        <span class="writing-sub-item">8–10 pts</span>
+      </div>
+      <div class="prompt-box">
+        <h4>Scenario &amp; Prompt</h4>
+        <p>A student hypothesizes that increasing the concentration of sucrose in a solution surrounding plant cells will cause the cells to lose water by osmosis, reducing their mass.</p><br>
+        <p><strong>(a)</strong> Describe the mechanism by which water moves across the cell membrane in response to changes in solute concentration. Include the role of water potential in your answer.</p><br>
+        <p><strong>(b)</strong> Design a controlled experiment to test the student's hypothesis. In your response, identify the independent variable, dependent variable, and at least two controlled variables. Describe the procedure.</p><br>
+        <p><strong>(c)</strong> Predict the results if the hypothesis is correct. Sketch or describe the expected graph of cell mass vs. sucrose concentration.</p><br>
+        <p><strong>(d)</strong> A student obtains data showing that at 0.6 M sucrose, cells gain mass instead of losing it. Propose a scientific explanation for this unexpected result.</p>
+      </div>
+      <div class="rubric-box rubric-bio">
+        <strong>Scoring Guide (~10 pts):</strong> Water potential and osmosis mechanism (2), Experimental design with controls (3), Correct prediction with justification (2), Analysis of anomalous data (2), Scientific reasoning/communication (1).
+      </div>
+      <textarea id="bio-frq1-ans" rows="14" placeholder="Answer each part clearly. Label parts (a), (b), (c), (d) in your response." oninput="updateWC('bio-frq1')"></textarea>
+      <div class="wc-row" id="bio-frq1-wc">0 words</div>
+      <div id="bio-frq1-fb"></div>
+      <button class="btn btn-accent btn-bio" id="bio-frq1-btn" onclick="gradeEssay('bio','frq1')">Grade my FRQ ↗</button>
+    </div>
+
+    <!-- FRQ 2 -->
+    <div class="tab-content" id="tc-bio-frq2">
+      <div class="writing-heading">Free Response — Conceptual Analysis</div>
+      <div class="writing-sub">
+        <span class="writing-sub-item">Short FRQ</span>
+        <span class="writing-sub-item">~20 min suggested</span>
+        <span class="writing-sub-item">6 pts</span>
+      </div>
+      <div class="prompt-box">
+        <h4>Prompt</h4>
+        <p>The following data table shows the relative rates of photosynthesis and cellular respiration in a plant under different light conditions:</p><br>
+        <p><strong>Darkness:</strong> Photosynthesis = 0, Respiration = 4 units CO₂/hr<br>
+        <strong>Low light:</strong> Photosynthesis = 2, Respiration = 4 units CO₂/hr<br>
+        <strong>Bright light:</strong> Photosynthesis = 10, Respiration = 4 units CO₂/hr</p><br>
+        <p><strong>(a)</strong> At which light level does net CO₂ uptake equal zero? This is called the light compensation point. Explain the biological significance of this point.</p><br>
+        <p><strong>(b)</strong> Explain how the products of the light-dependent reactions are used in the Calvin cycle.</p><br>
+        <p><strong>(c)</strong> A mutation eliminates RuBisCO function in the plant. Predict the effect on photosynthesis rate in bright light and explain your reasoning.</p>
+      </div>
+      <div class="rubric-box rubric-bio">
+        <strong>Scoring Guide (~6 pts):</strong> Light compensation point identification and significance (2), Light reactions → Calvin cycle connection (2), RuBisCO mutation prediction with reasoning (2).
+      </div>
+      <textarea id="bio-frq2-ans" rows="11" placeholder="Label parts (a), (b), (c). Use precise biological terminology." oninput="updateWC('bio-frq2')"></textarea>
+      <div class="wc-row" id="bio-frq2-wc">0 words</div>
+      <div id="bio-frq2-fb"></div>
+      <button class="btn btn-accent btn-bio" id="bio-frq2-btn" onclick="gradeEssay('bio','frq2')">Grade my FRQ ↗</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     WRITING SCREEN — AP PSYCHOLOGY
+     ══════════════════════════════════════════════════════════ -->
+<div id="s-writing-psych" class="screen">
+  <div class="exam-body">
+    <div class="writing-tabs" role="tablist">
+      <button class="wtab wtab-psych active" id="tab-psych-frq1" role="tab" aria-selected="true"  onclick="showWritingTab('psych','frq1')">FRQ 1 — Concept Application</button>
+      <button class="wtab wtab-psych"        id="tab-psych-frq2" role="tab" aria-selected="false" onclick="showWritingTab('psych','frq2')">FRQ 2 — Research Methods</button>
+    </div>
+
+    <!-- FRQ 1 -->
+    <div class="tab-content active" id="tc-psych-frq1">
+      <div class="writing-heading">Free Response — Concept Application</div>
+      <div class="writing-sub">
+        <span class="writing-sub-item">Scenario-based FRQ</span>
+        <span class="writing-sub-item">~25 min suggested</span>
+        <span class="writing-sub-item">7 pts</span>
+      </div>
+      <div class="prompt-box">
+        <h4>Scenario</h4>
+        <p>Maya is a college student who recently started a new job and is having trouble remembering her training. She notices she can easily recall information she studied just before sleeping but forgets material studied in the middle of the day. She also finds that stressful situations make it harder to concentrate.</p><br>
+        <p>Using your knowledge of psychology, answer the following:</p><br>
+        <p><strong>(a)</strong> Explain how <strong>encoding specificity</strong> might help Maya remember her training material better.</p><br>
+        <p><strong>(b)</strong> Explain the <strong>serial position effect</strong> that could account for her better recall of material studied before sleeping.</p><br>
+        <p><strong>(c)</strong> Describe how <strong>cortisol</strong> released during stress affects her memory and concentration.</p><br>
+        <p><strong>(d)</strong> Maya's manager suggests using <strong>spaced practice</strong> instead of massed practice. Explain why this would benefit Maya's long-term retention.</p><br>
+        <p><strong>(e)</strong> Identify the brain structure most central to forming new explicit memories and explain its role.</p>
+      </div>
+      <div class="rubric-box rubric-psych">
+        <strong>Scoring Guide (7 pts, 1–2 per part):</strong> Each answer must correctly define the concept AND apply it to Maya's situation. Definitional answers without application earn partial credit only.
+      </div>
+      <textarea id="psych-frq1-ans" rows="14" placeholder="Label each part (a)–(e). Define the concept, then apply it to Maya's situation." oninput="updateWC('psych-frq1')"></textarea>
+      <div class="wc-row" id="psych-frq1-wc">0 words</div>
+      <div id="psych-frq1-fb"></div>
+      <button class="btn btn-accent btn-psych" id="psych-frq1-btn" onclick="gradeEssay('psych','frq1')">Grade my FRQ ↗</button>
+    </div>
+
+    <!-- FRQ 2 -->
+    <div class="tab-content" id="tc-psych-frq2">
+      <div class="writing-heading">Free Response — Research Methods</div>
+      <div class="writing-sub">
+        <span class="writing-sub-item">Research design FRQ</span>
+        <span class="writing-sub-item">~20 min suggested</span>
+        <span class="writing-sub-item">7 pts</span>
+      </div>
+      <div class="prompt-box">
+        <h4>Scenario</h4>
+        <p>A researcher wants to test whether listening to classical music improves performance on math tests. She randomly assigns 60 participants into two groups: one group listens to Mozart for 10 minutes before a math test; the other group sits in silence for 10 minutes before the same test.</p><br>
+        <p><strong>(a)</strong> Identify the <strong>independent variable</strong> and the <strong>dependent variable</strong> in this study.</p><br>
+        <p><strong>(b)</strong> Explain why <strong>random assignment</strong> is important in this experiment.</p><br>
+        <p><strong>(c)</strong> The researcher finds that the Mozart group scored 8% higher on average. Explain whether this result would allow her to establish <strong>cause and effect</strong>.</p><br>
+        <p><strong>(d)</strong> A classmate suggests that the results might be explained by the <strong>placebo effect</strong>. Explain what this means in this context.</p><br>
+        <p><strong>(e)</strong> Describe ONE ethical principle from the <strong>APA guidelines</strong> that the researcher must follow in this study.</p>
+      </div>
+      <div class="rubric-box rubric-psych">
+        <strong>Scoring Guide (7 pts):</strong> Correct IV/DV identification (2), Purpose of random assignment (1), Causation reasoning (1), Placebo effect application (1), APA ethical principle (2).
+      </div>
+      <textarea id="psych-frq2-ans" rows="13" placeholder="Label each part (a)–(e). Be specific and use psychological terminology." oninput="updateWC('psych-frq2')"></textarea>
+      <div class="wc-row" id="psych-frq2-wc">0 words</div>
+      <div id="psych-frq2-fb"></div>
+      <button class="btn btn-accent btn-psych" id="psych-frq2-btn" onclick="gradeEssay('psych','frq2')">Grade my FRQ ↗</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     WRITING SCREEN — AP PRECALCULUS
+     ══════════════════════════════════════════════════════════ -->
+<div id="s-writing-calc" class="screen">
+  <div class="exam-body">
+    <div class="writing-tabs" role="tablist">
+      <button class="wtab wtab-calc active" id="tab-calc-frq1" role="tab" aria-selected="true"  onclick="showWritingTab('calc','frq1')">FRQ 1 — Functions</button>
+      <button class="wtab wtab-calc"        id="tab-calc-frq2" role="tab" aria-selected="false" onclick="showWritingTab('calc','frq2')">FRQ 2 — Modeling</button>
+    </div>
+
+    <!-- FRQ 1 -->
+    <div class="tab-content active" id="tc-calc-frq1">
+      <div class="writing-heading">Free Response — Functions &amp; Graphs</div>
+      <div class="writing-sub">
+        <span class="writing-sub-item">Calculator active</span>
+        <span class="writing-sub-item">~25 min suggested</span>
+        <span class="writing-sub-item">6 pts</span>
+      </div>
+      <div class="prompt-box">
+        <h4>Prompt</h4>
+        <p>Let <em>f</em> be the function defined by <em>f(x) = 2x³ − 9x² + 12x − 4</em>.</p><br>
+        <p><strong>(a)</strong> Find all zeros of <em>f</em>. Show your work or explain your method.</p><br>
+        <p><strong>(b)</strong> Determine all intervals on which <em>f</em> is increasing and all intervals on which <em>f</em> is decreasing. Justify your answer.</p><br>
+        <p><strong>(c)</strong> Identify the local maximum and local minimum values of <em>f</em>, and state where they occur.</p><br>
+        <p><strong>(d)</strong> The function <em>g</em> is defined as <em>g(x) = f(x − 2) + 3</em>. Describe the transformation from <em>f</em> to <em>g</em> and state the x-coordinate of each local extremum of <em>g</em>.</p>
+      </div>
+      <div class="rubric-box rubric-calc">
+        <strong>Scoring Guide (6 pts):</strong> Zeros with correct method (2), Increasing/decreasing intervals with justification (2), Local extrema with x-values (1), Transformation description and shifted extrema (1).
+      </div>
+      <textarea id="calc-frq1-ans" rows="13" placeholder="Label each part (a)–(d). Show all work and justify your answers." oninput="updateWC('calc-frq1')"></textarea>
+      <div class="wc-row" id="calc-frq1-wc">0 words</div>
+      <div id="calc-frq1-fb"></div>
+      <button class="btn btn-accent btn-calc" id="calc-frq1-btn" onclick="gradeEssay('calc','frq1')">Grade my FRQ ↗</button>
+    </div>
+
+    <!-- FRQ 2 -->
+    <div class="tab-content" id="tc-calc-frq2">
+      <div class="writing-heading">Free Response — Mathematical Modeling</div>
+      <div class="writing-sub">
+        <span class="writing-sub-item">Calculator active</span>
+        <span class="writing-sub-item">~25 min suggested</span>
+        <span class="writing-sub-item">6 pts</span>
+      </div>
+      <div class="prompt-box">
+        <h4>Prompt</h4>
+        <p>A Ferris wheel has a diameter of 60 feet. Riders board at the lowest point, which is 5 feet above the ground. The wheel completes one full rotation every 2 minutes.</p><br>
+        <p><strong>(a)</strong> Write a sinusoidal function <em>h(t)</em> that models a rider's height above the ground (in feet) as a function of time <em>t</em> (in minutes), assuming the rider starts at the bottom.</p><br>
+        <p><strong>(b)</strong> Determine the height of the rider at <em>t</em> = 0.75 minutes. Show your work.</p><br>
+        <p><strong>(c)</strong> Find all values of <em>t</em> in the interval [0, 2] when the rider is exactly 50 feet above the ground. Round to the nearest hundredth.</p><br>
+        <p><strong>(d)</strong> A second Ferris wheel has a period of 3 minutes and an amplitude of 25 feet, with the same minimum height. Compare the maximum heights and the rates at which riders ascend from the bottom for both wheels.</p>
+      </div>
+      <div class="rubric-box rubric-calc">
+        <strong>Scoring Guide (6 pts):</strong> Correct sinusoidal model with amplitude, period, midline (2), Height at t=0.75 (1), t-values when h=50 with correct algebra (2), Comparison of two wheels (1).
+      </div>
+      <textarea id="calc-frq2-ans" rows="13" placeholder="Label each part (a)–(d). Show all algebraic steps. Round as instructed." oninput="updateWC('calc-frq2')"></textarea>
+      <div class="wc-row" id="calc-frq2-wc">0 words</div>
+      <div id="calc-frq2-fb"></div>
+      <button class="btn btn-accent btn-calc" id="calc-frq2-btn" onclick="gradeEssay('calc','frq2')">Grade my FRQ ↗</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+  JAVASCRIPT
+  ══════════════════════════════════════════════════════════ -->
+<script>
+/* ═══════════════════════════════════════════════════════════
+   SECTION A — QUESTION DATA
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── AP WORLD HISTORY MCQ ────────────────────────────────── */
+const WORLD_SETS = [
+  { period:"Period 1 (1200–1450)", set:"Mongol conquests",
+    stim:"'They came, they uprooted, they burned, they slew, they plundered, and they departed.' — Ibn al-Athir, Arab chronicler, c. 1220",
+    qs:[
+      {q:"Ibn al-Athir's account best illustrates which historical pattern?",ch:["Pastoral nomads periodically disrupted and transformed sedentary civilizations","Islamic scholars generally welcomed foreign rulers who converted to Islam","Trade networks collapsed permanently following Mongol conquests","The Mongols primarily targeted Christian states in their campaigns"],ans:0},
+      {q:"Which of the following was a long-term consequence of Mongol rule in Eurasia?",ch:["Permanent destruction of overland trade routes across Central Asia","Facilitation of cross-continental exchange of goods, diseases, and ideas","Widespread conversion of conquered peoples to Buddhism","Unification of all Eurasian peoples under a single religious tradition"],ans:1},
+      {q:"A historian arguing the Mongols had a positive long-term impact would most likely cite which of the following?",ch:["The Black Death spreading along Mongol-controlled trade routes","The Pax Mongolica enabling commerce between East Asia and Europe","The destruction of Baghdad in 1258","The forced displacement of millions of people across Eurasia"],ans:1},
+    ]},
+  { period:"Period 1 (1200–1450)", set:"Indian Ocean trade",
+    stim:"Map showing Indian Ocean trade routes c. 1300, connecting East Africa, Arabia, South Asia, and Southeast Asia. Goods labeled: gold, ivory, textiles, spices, and porcelain.",
+    qs:[
+      {q:"The Indian Ocean trade network was primarily driven by which of the following?",ch:["European colonial companies controlling sea lanes","Monsoon winds enabling predictable seasonal voyages","Chinese naval superiority enforced by gunboats","Ottoman control of key maritime chokepoints"],ans:1},
+      {q:"Swahili city-states along East Africa most directly resulted from which of the following?",ch:["Arab and Persian merchants intermarrying with Bantu-speaking coastal populations","Portuguese conquest of interior kingdoms","The spread of Buddhism along the coast","Chinese tributary missions establishing colonies"],ans:0},
+      {q:"Which best explains why Islam spread widely across the Indian Ocean network by 1400?",ch:["Arab caliphate armies forced conversion among coastal populations","Muslim merchants served as cultural intermediaries in port cities","The Pope commissioned missionaries to follow trade routes","Islamic rulers offered tax incentives for conversion"],ans:1},
+    ]},
+  { period:"Period 2 (1450–1750)", set:"Columbian Exchange",
+    stim:"'The discovery of America, and that of a passage to the East Indies by the Cape of Good Hope, are the two greatest and most important events recorded in the history of mankind.' — Adam Smith, 1776",
+    qs:[
+      {q:"Adam Smith's statement reflects which broader historical development?",ch:["The rise of Atlantic trade networks and European global commerce","The decline of Asian economies relative to European ones","Religious transformations brought by missionary activity","The abolition of mercantilist economic policies"],ans:0},
+      {q:"Which best illustrates a consequence of the Columbian Exchange Smith likely had in mind?",ch:["The transfer of silver from the Americas to Asia via Europe","The spread of epidemic disease that reduced indigenous populations","The introduction of new crops that transformed global diets","The creation of plantation economies using enslaved African labor"],ans:0},
+      {q:"A historian critiquing Smith's framing would most likely argue it ignores which of the following?",ch:["The devastating impact on indigenous American populations","The economic benefits for Spain and Portugal","The role of wind patterns in enabling Atlantic crossings","The development of joint-stock companies"],ans:0},
+    ]},
+  { period:"Period 3 (1750–1900)", set:"Industrial Revolution",
+    stim:"British coal output (M tons): 1750: 5 · 1800: 15 · 1850: 50 · 1900: 225 · 'The factory system created new classes — the capitalist and the proletarian.' — Karl Marx",
+    qs:[
+      {q:"The coal production trend most directly resulted from which of the following?",ch:["The steam engine applied to mining and manufacturing","Expansion of Atlantic trade requiring more fuel","Government subsidies for fossil fuel extraction","Agricultural decline forcing workers into mines"],ans:0},
+      {q:"Which best explains why Britain industrialized before other European nations?",ch:["Coal and iron deposits, colonial markets, and favorable water transport geography","A larger population providing cheap labor","Earlier democratic reforms enabling entrepreneurship","Superior military technology preventing foreign competition"],ans:0},
+      {q:"The factory system most directly changed which social pattern?",ch:["Gender and family roles as women and children entered wage labor","Religious practice as factory owners promoted church attendance","Political participation as workers received the right to vote immediately","Agricultural productivity as fertilizers became widely available"],ans:0},
+    ]},
+  { period:"Period 3 (1750–1900)", set:"Atlantic revolutions",
+    stim:"'Liberty, equality, fraternity!' — French Republic, 1789 · 'All men are created equal.' — U.S. Declaration of Independence, 1776",
+    qs:[
+      {q:"Both documents reflect the influence of which 18th-century intellectual movement?",ch:["The Enlightenment","Romanticism","Mercantilism","Scientific Revolution"],ans:0},
+      {q:"Which best illustrates a contradiction between these ideals and actual practice?",ch:["The continuation of slavery and denial of rights to women in both France and the United States","The failure of both revolutions to establish republican governments","The rejection of religious freedom in both countries","The immediate abolition of monarchy in both nations"],ans:0},
+    ]},
+  { period:"Period 4 (1900–present)", set:"Decolonization and Cold War",
+    stim:"'We face neither East nor West; we face forward.' — Kwame Nkrumah, Ghana, 1957 · 'The colonial system is the greatest threat to world peace.' — Nehru, Bandung Conference, 1955",
+    qs:[
+      {q:"Nkrumah's statement most directly reflects which geopolitical movement?",ch:["Non-Alignment, rejecting both American and Soviet spheres of influence","Pan-Africanism's demand for continental unity under a single government","Socialist internationalism aligned with the Soviet Union","Capitalist modernization theory advocated by the United States"],ans:0},
+      {q:"Which best explains why decolonization accelerated dramatically after 1945?",ch:["Weakening of European powers after WWII, moral discrediting of racial hierarchy, and growing nationalist movements","U.S. military intervention on behalf of colonial subjects","The Soviet Union's successful global revolution","Economic collapse of all European colonial powers"],ans:0},
+    ]},
+];
+
+/* ── AP BIOLOGY MCQ ──────────────────────────────────────── */
+const BIO_SETS = [
+  { period:"Unit 1–2", set:"Cell structure & membrane",
+    stim:"Diagram of a eukaryotic cell membrane showing phospholipid bilayer, integral proteins, cholesterol molecules, and peripheral proteins. Temperature: 37°C.",
+    qs:[
+      {q:"Which component of the cell membrane is primarily responsible for maintaining membrane fluidity at varying temperatures?",ch:["Phospholipid fatty acid tails","Cholesterol molecules embedded in the bilayer","Integral membrane proteins","Carbohydrate chains on glycoproteins"],ans:1},
+      {q:"A cell is placed in a hypertonic solution. Which of the following best describes the direction of net water movement?",ch:["Water moves into the cell by osmosis","Water moves out of the cell by osmosis","Water moves in both directions equally","No net movement of water occurs"],ans:1},
+      {q:"Which process requires NO energy expenditure by the cell?",ch:["Active transport of Na⁺ against a concentration gradient","Endocytosis of large particles","Facilitated diffusion of glucose via carrier proteins","Sodium-potassium pump operation"],ans:2},
+    ]},
+  { period:"Unit 3", set:"Cellular energetics",
+    stim:"Graph showing the rate of photosynthesis vs. CO₂ concentration, with curves at 10°C and 25°C. The 25°C curve plateaus at a higher rate.",
+    qs:[
+      {q:"The plateau in the photosynthesis curve most likely indicates which limiting factor?",ch:["CO₂ concentration is no longer limiting; another factor (e.g., light) is now limiting","Temperature is too high, denaturing enzymes","The chloroplasts have run out of chlorophyll","CO₂ is toxic at high concentrations, reducing rate"],ans:0},
+      {q:"Why does the 25°C curve show a higher plateau than the 10°C curve?",ch:["Higher temperature increases enzyme activity, allowing faster Calvin cycle reactions","CO₂ is more soluble at higher temperatures","Light reactions occur faster at higher temperatures","The stomata are more open at 25°C"],ans:0},
+      {q:"In cellular respiration, which stage produces the most ATP per glucose molecule?",ch:["Glycolysis","The Krebs cycle (citric acid cycle)","Oxidative phosphorylation (electron transport chain)","Fermentation"],ans:2},
+    ]},
+  { period:"Unit 4–5", set:"Heredity & gene expression",
+    stim:"Pedigree showing an autosomal recessive trait. Two unaffected parents have one affected child (II-3) and two unaffected children.",
+    qs:[
+      {q:"Based on the pedigree, what are the genotypes of the two unaffected parents?",ch:["Both homozygous dominant (AA × AA)","Both heterozygous carriers (Aa × Aa)","One homozygous dominant, one heterozygous (AA × Aa)","Both homozygous recessive (aa × aa)"],ans:1},
+      {q:"What is the probability that the next child born to these parents will be affected?",ch:["0%","25%","50%","75%"],ans:1},
+      {q:"During transcription, which of the following directly serves as the template strand?",ch:["The coding (non-template) strand of DNA","The antisense (template) strand of DNA","mRNA produced in translation","tRNA anticodon sequence"],ans:1},
+    ]},
+  { period:"Unit 6–8", set:"Natural selection & ecology",
+    stim:"Data table showing beak depth of medium ground finches in the Galápagos before and after a drought year. Mean beak depth increased from 9.2 mm (pre-drought) to 10.1 mm (post-drought).",
+    qs:[
+      {q:"The change in beak depth most directly illustrates which evolutionary mechanism?",ch:["Genetic drift in a small isolated population","Natural selection favoring individuals with traits suited to changed conditions","Mutation introducing new alleles into the population","Gene flow from a neighboring island population"],ans:1},
+      {q:"Which condition is NOT required for Hardy-Weinberg equilibrium?",ch:["Large population size","Random mating","No gene flow","Directional selection acting on the population"],ans:3},
+      {q:"In a food web, approximately what percentage of energy is transferred from one trophic level to the next?",ch:["1%","10%","50%","90%"],ans:1},
+    ]},
+];
+
+/* ── AP PSYCHOLOGY MCQ ───────────────────────────────────── */
+const PSYCH_SETS = [
+  { period:"Unit 1–2", set:"Research methods & biological bases",
+    stim:"A researcher randomly assigns 80 participants to two groups. Group A receives a new study drug; Group B receives a placebo. Neither participants nor researchers know who received which (double-blind procedure).",
+    qs:[
+      {q:"The double-blind procedure is used primarily to control for which of the following?",ch:["Confirmation bias in the researcher's hypothesis","Demand characteristics and experimenter expectancy effects","Random sampling error","Confounding variables related to participant age"],ans:1},
+      {q:"Which research method would be MOST appropriate for determining a cause-and-effect relationship between sleep deprivation and test performance?",ch:["Naturalistic observation","Case study","Controlled experiment","Correlational survey"],ans:2},
+      {q:"A correlation coefficient of r = −0.85 between hours of TV watched and GPA indicates which of the following?",ch:["Watching TV causes lower GPA","Watching TV has no relationship with GPA","There is a strong negative relationship between TV hours and GPA","There is a weak positive relationship"],ans:2},
+    ]},
+  { period:"Unit 3–4", set:"Sensation, perception & states of consciousness",
+    stim:"A participant in a signal detection experiment correctly identifies a faint tone 60% of the time (hits) and falsely reports hearing a tone when none is present 20% of the time (false alarms).",
+    qs:[
+      {q:"According to signal detection theory, which factor besides sensory sensitivity affects hit rate and false alarm rate?",ch:["The participant's absolute threshold","Response criterion (bias)","The just-noticeable difference","Weber's constant for that modality"],ans:1},
+      {q:"The perception of depth through monocular cues — such as relative size and linear perspective — is an example of which perceptual process?",ch:["Bottom-up processing based purely on retinal input","Top-down processing using prior knowledge and expectations","Feature detection in the primary visual cortex","Parallel processing in the parietal lobe"],ans:1},
+      {q:"During which stage of sleep do the most vivid, narrative dreams typically occur?",ch:["Stage 1 NREM (hypnagogic state)","Stage 3 NREM (slow-wave sleep)","REM sleep","Stage 2 NREM (sleep spindles)"],ans:2},
+    ]},
+  { period:"Unit 5–6", set:"Learning & cognition",
+    stim:"In a classic experiment, a dog that previously had no response to a bell now salivates at the sound after the bell was repeatedly paired with food. After the food is removed and only the bell is presented repeatedly, salivation eventually stops.",
+    qs:[
+      {q:"The process by which salivation to the bell was established is called:",ch:["Operant conditioning","Classical conditioning","Observational learning","Habituation"],ans:1},
+      {q:"The eventual stopping of salivation when only the bell is presented is called:",ch:["Stimulus generalization","Spontaneous recovery","Extinction","Discrimination"],ans:2},
+      {q:"A student studies for an exam using the same room where the exam will be held. This strategy uses which memory principle?",ch:["The spacing effect","Encoding specificity","The serial position effect","Proactive interference"],ans:1},
+    ]},
+  { period:"Unit 7–9", set:"Motivation, development & psychological disorders",
+    stim:"Maslow's Hierarchy of Needs pyramid showing (from bottom): Physiological → Safety → Love/Belonging → Esteem → Self-Actualization.",
+    qs:[
+      {q:"According to Maslow's hierarchy, which need must generally be addressed BEFORE esteem needs can be prioritized?",ch:["Self-actualization","Love and belonging","Cognitive needs","Transcendence"],ans:1},
+      {q:"A child who is afraid of dogs after being bitten, and who is now also afraid of cats, demonstrates which classical conditioning phenomenon?",ch:["Extinction","Stimulus discrimination","Stimulus generalization","Spontaneous recovery"],ans:2},
+      {q:"The DSM-5 classifies psychological disorders primarily based on which criteria?",ch:["Underlying neurobiological causes","Clusters of symptoms, duration, and functional impairment","Psychoanalytic defense mechanisms","Social and cultural deviance alone"],ans:1},
+    ]},
+];
+
+/* ── AP PRECALCULUS MCQ ──────────────────────────────────── */
+const CALC_SETS = [
+  { period:"Unit 1", set:"Polynomial & rational functions",
+    stim:"Graph of a polynomial function f(x) showing: zeros at x = −2, x = 1 (double zero), x = 4; y-intercept at (0, 8); end behavior: as x→+∞, f(x)→+∞ and as x→−∞, f(x)→−∞.",
+    qs:[
+      {q:"Based on the described end behavior, what is the degree of f(x)?",ch:["Even degree with a positive leading coefficient","Odd degree with a positive leading coefficient","Even degree with a negative leading coefficient","Odd degree with a negative leading coefficient"],ans:1},
+      {q:"Since x = 1 is a double zero (multiplicity 2), what is the behavior of f at x = 1?",ch:["The graph crosses the x-axis at x = 1","The graph touches but does not cross the x-axis at x = 1","The graph has a vertical asymptote at x = 1","The graph has a removable discontinuity at x = 1"],ans:1},
+      {q:"A rational function g(x) = (x² − 4) / (x − 2). Which of the following correctly describes g(x)?",ch:["g(x) = x + 2 for all x","g(x) = x + 2 with a removable discontinuity (hole) at x = 2","g(x) has a vertical asymptote at x = 2","g(x) is undefined for all x"],ans:1},
+    ]},
+  { period:"Unit 2", set:"Exponential & logarithmic functions",
+    stim:"Table of values for an exponential function: x = 0 → y = 3; x = 1 → y = 6; x = 2 → y = 12; x = 3 → y = 24.",
+    qs:[
+      {q:"What is the explicit formula for this exponential function?",ch:["f(x) = 3 · 2ˣ","f(x) = 2 · 3ˣ","f(x) = 6 · 2ˣ","f(x) = 3ˣ + 2"],ans:0},
+      {q:"log₂(64) is equal to which of the following?",ch:["4","6","8","32"],ans:1},
+      {q:"Which transformation maps f(x) = eˣ to g(x) = e^(x−3) + 2?",ch:["Shift left 3 units, up 2 units","Shift right 3 units, up 2 units","Shift right 3 units, down 2 units","Shift left 3 units, down 2 units"],ans:1},
+    ]},
+  { period:"Unit 3", set:"Trigonometric functions",
+    stim:"Unit circle diagram showing angles 0, π/6, π/4, π/3, π/2, π, 3π/2, 2π with corresponding (cos θ, sin θ) coordinates labeled.",
+    qs:[
+      {q:"What is the exact value of sin(5π/6)?",ch:["−√3/2","√3/2","1/2","−1/2"],ans:2},
+      {q:"A sinusoidal function has amplitude 3, period 4π, and midline y = 1. Which of the following could be its equation?",ch:["y = 3sin(x/2) + 1","y = 3sin(2x) + 1","y = 3sin(x/2) − 1","y = (1/3)sin(2x) + 1"],ans:0},
+      {q:"In a right triangle, if sin θ = 5/13, what is cos θ?",ch:["12/13","5/12","13/12","8/13"],ans:0},
+    ]},
+  { period:"Unit 4", set:"Functions — composition, inverse & transformations",
+    stim:"Functions defined as: f(x) = 2x + 3, g(x) = x² − 1.",
+    qs:[
+      {q:"What is (f ∘ g)(x)?",ch:["2x² − 2 + 3 = 2x² + 1","4x² + 12x + 8","2x² + 1","(2x+3)² − 1"],ans:0},
+      {q:"What is f⁻¹(x), the inverse of f(x) = 2x + 3?",ch:["f⁻¹(x) = (x − 3)/2","f⁻¹(x) = (x + 3)/2","f⁻¹(x) = 2x − 3","f⁻¹(x) = 1/(2x+3)"],ans:0},
+      {q:"If h(x) = f(x − 2) + 5, describe the transformation from f to h.",ch:["Shift right 2 units and up 5 units","Shift left 2 units and up 5 units","Shift right 2 units and down 5 units","Shift left 2 units and down 5 units"],ans:0},
+    ]},
+];
+
+/* ─── Flatten question sets into arrays ─────────────────── */
+function flattenSets(sets) {
+  const out = [];
+  sets.forEach(s => s.qs.forEach((q, i) =>
+    out.push({ ...q, period: s.period, set: s.set, stim: s.stim, first: i === 0 })
+  ));
+  return out;
+}
+const ALL_QUESTIONS = {
+  world: flattenSets(WORLD_SETS),
+  bio:   flattenSets(BIO_SETS),
+  psych: flattenSets(PSYCH_SETS),
+  calc:  flattenSets(CALC_SETS),
+};
+
+/* ═══════════════════════════════════════════════════════════
+   SECTION B — APP STATE
+   ═══════════════════════════════════════════════════════════ */
+let activeCourse = 'world'; // 'world' | 'bio' | 'psych' | 'calc'
+let cur      = 0;
+let allQ     = [];
+let mcqAns   = [];
+let mcqDone  = false;
+let mcqTID   = null;
+let mcqTime  = 55 * 60;
+let wTID     = null;
+let wTime    = 100 * 60;
+let leqSelections = { world: 0 };
+const grading = {};
+
+/* ── Per-course config ──────────────────────────────────── */
+const COURSE_CONFIG = {
+  world: {
+    name: 'AP World History',
+    accentVar: '--world-accent',
+    accentVal: '#5B9B6A',
+    lightVar: '--world-light',
+    lightVal: '#D4EDDA',
+    badgeClass: 'badge-world',
+    fillClass: 'fill-world',
+    modalTitle: 'AP World History: Modern',
+    modalSub: 'Choose which section you\'d like to study',
+    options: [
+      { icon:'✏️', label:'Multiple Choice (MCQ)', meta:'55 questions · 55 min · 40% of score', action:"closeModal();startMCQ('world');" },
+      { icon:'📝', label:'Writing Section', meta:'SAQ · DBQ · LEQ · 100 min · 60% of score', action:"closeModal();startWriting('world');" },
+    ],
+    resultNote: 'MCQ = 40% of total AP score. Writing (SAQ, DBQ, LEQ) makes up 60%.',
+    breakdownLabel: 'Performance by period',
+    mcqTime: 55 * 60,
+  },
+  bio: {
+    name: 'AP Biology',
+    accentVar: '--bio-accent',
+    accentVal: '#4A90D9',
+    lightVar: '--bio-light',
+    lightVal: '#D0E8F8',
+    badgeClass: 'badge-bio',
+    fillClass: 'fill-bio',
+    modalTitle: 'AP Biology',
+    modalSub: 'Choose which section you\'d like to practice',
+    options: [
+      { icon:'🔬', label:'Multiple Choice (MCQ)', meta:'Practice set · timed · ~45 min', action:"closeModal();startMCQ('bio');" },
+      { icon:'📝', label:'Free Response (FRQ)', meta:'Experimental design · Conceptual FRQ · AI graded', action:"closeModal();startWriting('bio');" },
+    ],
+    resultNote: 'MCQ = 50% of AP Bio score. FRQ makes up the remaining 50%.',
+    breakdownLabel: 'Performance by unit',
+    mcqTime: 45 * 60,
+  },
+  psych: {
+    name: 'AP Psychology',
+    accentVar: '--psych-accent',
+    accentVal: '#9B6BB5',
+    lightVar: '--psych-light',
+    lightVal: '#EBD9F5',
+    badgeClass: 'badge-psych',
+    fillClass: 'fill-psych',
+    modalTitle: 'AP Psychology',
+    modalSub: 'Choose which section you\'d like to practice',
+    options: [
+      { icon:'🧩', label:'Multiple Choice (MCQ)', meta:'Practice set · timed · ~50 min', action:"closeModal();startMCQ('psych');" },
+      { icon:'📝', label:'Free Response (FRQ)', meta:'Concept application · Research methods · AI graded', action:"closeModal();startWriting('psych');" },
+    ],
+    resultNote: 'MCQ = ~66% of AP Psych score. FRQ makes up the remaining ~34%.',
+    breakdownLabel: 'Performance by unit',
+    mcqTime: 50 * 60,
+  },
+  calc: {
+    name: 'AP Precalculus',
+    accentVar: '--calc-accent',
+    accentVal: '#D97B4A',
+    lightVar: '--calc-light',
+    lightVal: '#FAE0CC',
+    badgeClass: 'badge-calc',
+    fillClass: 'fill-calc',
+    modalTitle: 'AP Precalculus',
+    modalSub: 'Choose which section you\'d like to practice',
+    options: [
+      { icon:'🔢', label:'Multiple Choice (MCQ)', meta:'Practice set · timed · ~40 min', action:"closeModal();startMCQ('calc');" },
+      { icon:'📐', label:'Free Response (FRQ)', meta:'Functions · Modeling · AI graded', action:"closeModal();startWriting('calc');" },
+    ],
+    resultNote: 'MCQ = ~50% of AP Precalc score. FRQ makes up the remaining ~50%.',
+    breakdownLabel: 'Performance by unit',
+    mcqTime: 40 * 60,
+  },
+};
+
+/* ═══════════════════════════════════════════════════════════
+   SECTION C — SCREEN & NAV ROUTING
+   ═══════════════════════════════════════════════════════════ */
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  if (id) document.getElementById(id).classList.add('active');
+}
+function showExamNav(label) {
+  document.getElementById('exam-nav').classList.add('visible');
+  document.getElementById('exam-nav-title').innerHTML =
+    `${COURSE_CONFIG[activeCourse].name} &nbsp;/&nbsp; <b>${label}</b>`;
+}
+function hideExamNav() { document.getElementById('exam-nav').classList.remove('visible'); }
+function goHome() {
+  clearInterval(mcqTID); clearInterval(wTID);
+  hideExamNav(); showScreen('s-home');
+}
+
+function openModal(course) {
+  activeCourse = course;
+  const cfg = COURSE_CONFIG[course];
+  document.getElementById('modal-heading').textContent = cfg.modalTitle;
+  document.getElementById('modal-sub').textContent = cfg.modalSub;
+  let html = '';
+  cfg.options.forEach(o => {
+    html += `<button class="modal-option" style="--modal-accent:${cfg.accentVal};--modal-bg:${cfg.lightVal}20"
+               onclick="${o.action}">
+               <div class="modal-option-icon">${o.icon}</div>
+               <div>
+                 <div class="modal-option-label">${o.label}</div>
+                 <div class="modal-option-meta">${o.meta}</div>
+               </div>
+               <div class="modal-option-arrow" style="color:${cfg.accentVal}">→</div>
+             </button>`;
+  });
+  document.getElementById('modal-options').innerHTML = html;
+  document.getElementById('modal-overlay').style.display = 'flex';
+}
+function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; }
+function handleOverlayClick(e) {
+  if (e.target === document.getElementById('modal-overlay')) closeModal();
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SECTION D — MCQ LOGIC
+   ═══════════════════════════════════════════════════════════ */
+function startMCQ(course) {
+  activeCourse = course;
+  allQ    = ALL_QUESTIONS[course];
+  cur     = 0;
+  mcqAns  = new Array(allQ.length).fill(-1);
+  mcqDone = false;
+  mcqTime = COURSE_CONFIG[course].mcqTime;
+  clearInterval(mcqTID);
+
+  // Set course colours on MCQ screen
+  const cfg = COURSE_CONFIG[course];
+  document.getElementById('progress-fill').className = 'mcq-progress-fill ' + cfg.fillClass;
+  document.getElementById('btn-mcq-submit').className = 'btn btn-accent btn-block btn-' + course;
+
+  showScreen('s-mcq');
+  showExamNav('Multiple Choice');
+  renderQ();
+  tickMCQTimer();
+  mcqTID = setInterval(() => {
+    mcqTime--;
+    tickMCQTimer();
+    if (mcqTime <= 0) { clearInterval(mcqTID); submitMCQ(); }
+  }, 1000);
+}
+function retakeMCQ() { startMCQ(activeCourse); }
+
+function tickMCQTimer() {
+  const m = Math.floor(mcqTime / 60), s = mcqTime % 60;
+  const el = document.getElementById('exam-timer');
+  el.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  el.className = 'exam-timer' + (mcqTime <= 300 ? ' urgent' : '');
+}
+
+function renderQ() {
+  const q = allQ[cur], total = allQ.length;
+  const answered = mcqAns.filter(a => a >= 0).length;
+  document.getElementById('q-counter').textContent  = `Question ${cur+1} of ${total}`;
+  document.getElementById('q-answered').textContent = `${answered} answered`;
+  document.getElementById('progress-fill').style.width = `${Math.round((cur+1)/total*100)}%`;
+
+  const LETTERS = ['A','B','C','D'];
+  const cfg = COURSE_CONFIG[activeCourse];
+  let html = '';
+  if (q.first) {
+    html += `<div class="set-badge ${cfg.badgeClass}">📋 ${q.period} &nbsp;·&nbsp; ${q.set}</div>`;
+    html += `<div class="stimulus" style="border-left-color:${cfg.accentVal}">${q.stim.replace(/\n/g,'<br>')}
+               <div class="stimulus-attr">Question set: ${q.set}</div></div>`;
+  } else {
+    html += `<div class="set-badge ${cfg.badgeClass}">📋 ${q.period} &nbsp;·&nbsp; ${q.set}
+               <span style="opacity:.6;font-weight:500"> (continued)</span></div>`;
+  }
+  const choicesHtml = q.ch.map((c, i) => {
+    let cls = 'choice';
+    if (mcqDone) {
+      if (i === q.ans) cls += ' correct';
+      else if (mcqAns[cur] === i) cls += ' wrong';
+    } else if (mcqAns[cur] === i) cls += ' selected';
+    return `<button class="${cls}"
+              onclick="pickAnswer(${i})"
+              ${mcqDone ? 'disabled' : ''}
+              style="--course-accent:${cfg.accentVal};--course-light:${cfg.lightVal}40">
+              <span class="choice-letter">${LETTERS[i]}</span>
+              <span class="choice-text">${c}</span>
+            </button>`;
+  }).join('');
+
+  html += `<div class="qcard"><div class="qnum">Question ${cur+1} of ${total}</div>
+             <div class="qtext">${q.q}</div>
+             <div class="choices">${choicesHtml}</div></div>`;
+  document.getElementById('q-area').innerHTML = html;
+
+  document.getElementById('btn-prev').disabled = (cur === 0);
+  document.getElementById('btn-next').style.display = cur < total-1 ? '' : 'none';
+  document.getElementById('btn-mcq-submit').style.display =
+    (!mcqDone && cur === total-1) ? 'block' : 'none';
+}
+
+function pickAnswer(i) {
+  if (mcqDone) return;
+  mcqAns[cur] = i;
+  document.querySelectorAll('.choice').forEach((el, idx) =>
+    el.classList.toggle('selected', idx === i)
+  );
+  const answered = mcqAns.filter(a => a >= 0).length;
+  document.getElementById('q-answered').textContent = `${answered} answered`;
+  if (cur === allQ.length - 1) document.getElementById('btn-mcq-submit').style.display = 'block';
+}
+
+function mcqNav(dir) {
+  cur = Math.max(0, Math.min(allQ.length-1, cur+dir));
+  renderQ();
+}
+
+function submitMCQ() {
+  clearInterval(mcqTID);
+  mcqDone = true;
+  let correct = 0;
+  allQ.forEach((q,i) => { if (mcqAns[i] === q.ans) correct++; });
+  const pct = Math.round(correct / allQ.length * 100);
+
+  document.getElementById('r-pct').textContent  = pct + '%';
+  document.getElementById('r-raw').textContent  = `${correct} / ${allQ.length} correct`;
+  document.getElementById('r-note').textContent = COURSE_CONFIG[activeCourse].resultNote;
+  document.getElementById('r-breakdown-title').textContent = COURSE_CONFIG[activeCourse].breakdownLabel;
+
+  const cfg = COURSE_CONFIG[activeCourse];
+  let band, bg, fg;
+  if      (pct >= 80) { band='Projected AP Score: 5 ⭐'; bg='rgba(58,140,82,0.12)'; fg='#3A8C52'; }
+  else if (pct >= 65) { band='Projected AP Score: 4';    bg='rgba(74,144,217,0.12)'; fg='#4A90D9'; }
+  else if (pct >= 50) { band='Projected AP Score: 3';    bg='rgba(212,144,43,0.12)'; fg='#D4902B'; }
+  else if (pct >= 35) { band='Projected AP Score: 2';    bg='rgba(192,69,58,0.08)';  fg='#C0453A'; }
+  else                { band='Projected AP Score: 1';    bg='rgba(192,69,58,0.06)';  fg='#C0453A'; }
+  const bel = document.getElementById('r-band');
+  bel.textContent = band; bel.style.background = bg;
+  bel.style.color = fg; bel.style.border = `1.5px solid ${fg}55`;
+
+  document.getElementById('results-home-btn').className = `btn btn-accent btn-${activeCourse}`;
+
+  // Breakdown by period
+  const periods = {};
+  allQ.forEach((q,i) => {
+    if (!periods[q.period]) periods[q.period] = {c:0, t:0};
+    periods[q.period].t++;
+    if (mcqAns[i] === q.ans) periods[q.period].c++;
+  });
+  document.getElementById('r-breakdown').innerHTML =
+    Object.entries(periods).map(([p,d]) =>
+      `<div class="period-row">
+         <span style="font-size:14px">${p}</span>
+         <span class="period-score" style="color:${cfg.accentVal}">
+           ${d.c}/${d.t} &nbsp;<span style="color:var(--text-faint);font-weight:400">(${Math.round(d.c/d.t*100)}%)</span>
+         </span>
+       </div>`
+    ).join('');
+
+  const L = ['A','B','C','D'];
+  document.getElementById('r-review').innerHTML =
+    allQ.map((q,i) => {
+      const ok = mcqAns[i] === q.ans;
+      const ua = mcqAns[i] >= 0 ? L[mcqAns[i]] : '—';
+      return `<div class="rev-item">
+                <div class="rev-q"><strong>Q${i+1}:</strong> ${q.q}</div>
+                <div class="${ok?'rev-ok':'rev-bad'}">${ok ? '✓ Correct' : `✗ You chose ${ua} · Correct: ${L[q.ans]}`}</div>
+                ${!ok ? `<div class="rev-ans">Correct answer: ${q.ch[q.ans]}</div>` : ''}
+              </div>`;
+    }).join('');
+
+  showExamNav('MCQ Results');
+  showScreen('s-mcq-results');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SECTION E — WRITING LOGIC
+   ═══════════════════════════════════════════════════════════ */
+function startWriting(course) {
+  activeCourse = course;
+  wTime = (course === 'world') ? 100*60 : 50*60;
+  clearInterval(wTID);
+  showScreen('s-writing-' + course);
+  showExamNav('Free Response');
+  tickWritingTimer();
+  wTID = setInterval(() => { wTime--; tickWritingTimer(); if (wTime<=0) clearInterval(wTID); }, 1000);
+  // Reset tabs to first
+  const tabs = document.querySelectorAll(`#s-writing-${course} .wtab`);
+  const contents = document.querySelectorAll(`#s-writing-${course} .tab-content`);
+  tabs.forEach((t,i) => { t.classList.toggle('active', i===0); t.setAttribute('aria-selected', i===0?'true':'false'); });
+  contents.forEach((c,i) => c.classList.toggle('active', i===0));
+}
+
+function tickWritingTimer() {
+  const h=Math.floor(wTime/3600), m=Math.floor((wTime%3600)/60), s=wTime%60;
+  const el=document.getElementById('exam-timer');
+  el.textContent = h>0
+    ? `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`
+    : `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  el.className = 'exam-timer' + (wTime<=300?' urgent':'');
+}
+
+function showWritingTab(course, id) {
+  const screen = document.getElementById('s-writing-' + course);
+  screen.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  screen.querySelectorAll('.wtab').forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected','false'); });
+  document.getElementById('tc-' + course + '-' + id).classList.add('active');
+  const tabBtn = document.getElementById('tab-' + course + '-' + id);
+  tabBtn.classList.add('active'); tabBtn.setAttribute('aria-selected','true');
+}
+
+function updateWC(id) {
+  const text = document.getElementById(id + '-ans').value.trim();
+  const count = text ? text.split(/\s+/).length : 0;
+  document.getElementById(id + '-wc').textContent = count + ' word' + (count===1?'':'s');
+}
+
+function setLEQ(course, n) {
+  leqSelections[course] = n;
+  const labels = {
+    1: '✓ Option 1 selected — Mongol Empire &amp; Eurasian trade (c. 1200–1450)',
+    2: '✓ Option 2 selected — Columbian Exchange &amp; Americas/Europe economies (c. 1450–1750)',
+    3: '✓ Option 3 selected — Nationalism &amp; political change in Europe/Americas (c. 1750–1900)',
+  };
+  const el = document.getElementById(course + '-leq-hint');
+  el.innerHTML = labels[n];
+  el.style.color = COURSE_CONFIG[course].accentVal;
+  el.style.background = COURSE_CONFIG[course].lightVal + '60';
+  el.style.fontStyle = 'normal';
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SECTION F — AI GRADING
+   ═══════════════════════════════════════════════════════════ */
+
+const GRADE_CONFIG = {
+  world: {
+    saq: {
+      maxPts: 3,
+      system: `You are an experienced College Board AP World History exam reader.
+Grade this SAQ strictly using the official rubric. 3 parts, 1 point each.
+Award credit ONLY for specific, historically accurate content.
+Return ONLY valid JSON (no markdown, no extra text):
+{"part_a":{"score":0,"feedback":"one sentence"},
+ "part_b":{"score":0,"feedback":"one sentence"},
+ "part_c":{"score":0,"feedback":"one sentence"},
+ "total":0,
+ "overall":"two sentences: one strength, one specific suggestion"}`,
+      catLabels: { part_a:'Part (a)', part_b:'Part (b)', part_c:'Part (c)' },
+      catMax:    { part_a:1, part_b:1, part_c:1 },
+    },
+    dbq: {
+      maxPts: 7,
+      system: `You are an experienced College Board AP World History exam reader.
+Grade this DBQ using the official 7-point rubric.
+Prompt: "Evaluate the extent to which the Industrial Revolution transformed social and economic structures 1750–1900."
+Documents: Ure 1835, mill worker 1832, Engels 1845, Chadwick 1842, Smiles 1859, Marx/Engels 1848, Japanese govt 1890.
+Return ONLY valid JSON (no markdown):
+{"thesis":{"score":0,"feedback":"one sentence"},
+ "contextualization":{"score":0,"feedback":"one sentence"},
+ "document_content":{"score":0,"feedback":"one sentence — note: out of 2"},
+ "outside_evidence":{"score":0,"feedback":"one sentence"},
+ "sourcing":{"score":0,"feedback":"one sentence"},
+ "complexity":{"score":0,"feedback":"one sentence"},
+ "total":0,
+ "overall":"two sentences: one strength, one specific suggestion"}`,
+      catLabels: { thesis:'Thesis', contextualization:'Contextualization', document_content:'Document evidence', outside_evidence:'Outside evidence', sourcing:'Sourcing (HAPP)', complexity:'Complexity' },
+      catMax:    { thesis:1, contextualization:1, document_content:2, outside_evidence:1, sourcing:1, complexity:1 },
+    },
+    leq: {
+      maxPts: 6,
+      getSystem: (n) => `You are an experienced College Board AP World History exam reader.
+Grade this LEQ using the official 6-point rubric.
+The student chose Option ${n}: ${n===1?'Mongol Empire and Eurasian trade (c. 1200–1450)':n===2?'Columbian Exchange and economies of the Americas/Europe (c. 1450–1750)':'Nationalism and political change in Europe/Americas (c. 1750–1900)'}.
+Return ONLY valid JSON (no markdown):
+{"thesis":{"score":0,"feedback":"one sentence"},
+ "contextualization":{"score":0,"feedback":"one sentence"},
+ "evidence":{"score":0,"feedback":"one sentence — note: out of 2"},
+ "historical_reasoning":{"score":0,"feedback":"one sentence"},
+ "complexity":{"score":0,"feedback":"one sentence"},
+ "total":0,
+ "overall":"two sentences: one strength, one specific suggestion"}`,
+      catLabels: { thesis:'Thesis', contextualization:'Contextualization', evidence:'Evidence', historical_reasoning:'Historical reasoning', complexity:'Complexity' },
+      catMax:    { thesis:1, contextualization:1, evidence:2, historical_reasoning:1, complexity:1 },
+    },
+  },
+  bio: {
+    frq1: {
+      maxPts: 10,
+      system: `You are an experienced AP Biology exam reader.
+Grade this FRQ on osmosis and experimental design using the official AP Biology rubric standards.
+Prompt covers: water potential/osmosis mechanism (a), experimental design (b), prediction (c), anomalous data analysis (d).
+Return ONLY valid JSON (no markdown):
+{"part_a":{"score":0,"feedback":"one sentence","max":2},
+ "part_b":{"score":0,"feedback":"one sentence","max":3},
+ "part_c":{"score":0,"feedback":"one sentence","max":2},
+ "part_d":{"score":0,"feedback":"one sentence","max":2},
+ "communication":{"score":0,"feedback":"one sentence","max":1},
+ "total":0,
+ "overall":"two sentences: one strength, one specific improvement"}`,
+      catLabels: { part_a:'Part (a) — Osmosis/water potential', part_b:'Part (b) — Experimental design', part_c:'Part (c) — Prediction', part_d:'Part (d) — Anomalous data', communication:'Scientific communication' },
+      catMax: { part_a:2, part_b:3, part_c:2, part_d:2, communication:1 },
+    },
+    frq2: {
+      maxPts: 6,
+      system: `You are an experienced AP Biology exam reader.
+Grade this FRQ on photosynthesis/respiration data using AP Biology rubric standards.
+Prompt covers: light compensation point (a), light reactions → Calvin cycle (b), RuBisCO mutation (c).
+Return ONLY valid JSON (no markdown):
+{"part_a":{"score":0,"feedback":"one sentence","max":2},
+ "part_b":{"score":0,"feedback":"one sentence","max":2},
+ "part_c":{"score":0,"feedback":"one sentence","max":2},
+ "total":0,
+ "overall":"two sentences: one strength, one specific improvement"}`,
+      catLabels: { part_a:'Part (a) — Compensation point', part_b:'Part (b) — Light reactions to Calvin cycle', part_c:'Part (c) — RuBisCO mutation' },
+      catMax: { part_a:2, part_b:2, part_c:2 },
+    },
+  },
+  psych: {
+    frq1: {
+      maxPts: 7,
+      system: `You are an experienced AP Psychology exam reader.
+Grade this FRQ (concept application to Maya scenario) using AP Psychology rubric standards.
+Each part requires correct DEFINITION + APPLICATION to earn full credit. Definitions alone = partial credit.
+Parts: (a) encoding specificity, (b) serial position effect, (c) cortisol and stress, (d) spaced practice, (e) hippocampus/explicit memory.
+Return ONLY valid JSON (no markdown):
+{"part_a":{"score":0,"feedback":"one sentence"},
+ "part_b":{"score":0,"feedback":"one sentence"},
+ "part_c":{"score":0,"feedback":"one sentence"},
+ "part_d":{"score":0,"feedback":"one sentence"},
+ "part_e":{"score":0,"feedback":"one sentence"},
+ "total":0,
+ "overall":"two sentences: one strength, one specific improvement"}`,
+      catLabels: { part_a:'(a) Encoding specificity', part_b:'(b) Serial position effect', part_c:'(c) Cortisol & stress', part_d:'(d) Spaced practice', part_e:'(e) Memory structure' },
+      catMax: { part_a:1, part_b:1, part_c:2, part_d:2, part_e:1 },
+    },
+    frq2: {
+      maxPts: 7,
+      system: `You are an experienced AP Psychology exam reader.
+Grade this FRQ (research methods — Mozart/math experiment) using AP Psychology rubric standards.
+Parts: (a) IV/DV identification, (b) random assignment purpose, (c) causation reasoning, (d) placebo effect, (e) APA ethical principle.
+Return ONLY valid JSON (no markdown):
+{"part_a":{"score":0,"feedback":"one sentence"},
+ "part_b":{"score":0,"feedback":"one sentence"},
+ "part_c":{"score":0,"feedback":"one sentence"},
+ "part_d":{"score":0,"feedback":"one sentence"},
+ "part_e":{"score":0,"feedback":"one sentence"},
+ "total":0,
+ "overall":"two sentences: one strength, one specific improvement"}`,
+      catLabels: { part_a:'(a) IV/DV identification', part_b:'(b) Random assignment', part_c:'(c) Causation', part_d:'(d) Placebo effect', part_e:'(e) APA ethics' },
+      catMax: { part_a:2, part_b:1, part_c:1, part_d:1, part_e:2 },
+    },
+  },
+  calc: {
+    frq1: {
+      maxPts: 6,
+      system: `You are an experienced AP Precalculus exam reader.
+Grade this FRQ on polynomial functions (f(x) = 2x³ − 9x² + 12x − 4) using AP Precalculus rubric standards.
+Parts: (a) zeros, (b) increasing/decreasing intervals, (c) local extrema, (d) transformation g(x)=f(x−2)+3.
+Return ONLY valid JSON (no markdown):
+{"part_a":{"score":0,"feedback":"one sentence"},
+ "part_b":{"score":0,"feedback":"one sentence"},
+ "part_c":{"score":0,"feedback":"one sentence"},
+ "part_d":{"score":0,"feedback":"one sentence"},
+ "total":0,
+ "overall":"two sentences: one strength, one specific improvement"}`,
+      catLabels: { part_a:'(a) Zeros', part_b:'(b) Intervals', part_c:'(c) Local extrema', part_d:'(d) Transformation' },
+      catMax: { part_a:2, part_b:2, part_c:1, part_d:1 },
+    },
+    frq2: {
+      maxPts: 6,
+      system: `You are an experienced AP Precalculus exam reader.
+Grade this FRQ on sinusoidal modeling (Ferris wheel) using AP Precalculus rubric standards.
+Parts: (a) sinusoidal model h(t), (b) height at t=0.75, (c) t-values when h=50, (d) comparison of two wheels.
+Return ONLY valid JSON (no markdown):
+{"part_a":{"score":0,"feedback":"one sentence"},
+ "part_b":{"score":0,"feedback":"one sentence"},
+ "part_c":{"score":0,"feedback":"one sentence"},
+ "part_d":{"score":0,"feedback":"one sentence"},
+ "total":0,
+ "overall":"two sentences: one strength, one specific improvement"}`,
+      catLabels: { part_a:'(a) Sinusoidal model', part_b:'(b) Height at t=0.75', part_c:'(c) t-values (h=50)', part_d:'(d) Wheel comparison' },
+      catMax: { part_a:2, part_b:1, part_c:2, part_d:1 },
+    },
+  },
+};
+
+async function gradeEssay(course, type) {
+  const key = course + '-' + type;
+  if (grading[key]) return;
+
+  const answer = document.getElementById(key + '-ans').value.trim();
+  if (answer.length < 80) {
+    document.getElementById(key + '-fb').innerHTML =
+      `<div class="feedback-card" style="color:var(--red)">Please write a more complete response before grading.</div>`;
+    return;
+  }
+
+  // LEQ requires selection
+  if (type === 'leq' && (!leqSelections[course] || leqSelections[course] === 0)) {
+    document.getElementById(key + '-fb').innerHTML =
+      `<div class="feedback-card" style="color:var(--red)">Please select a prompt above before grading.</div>`;
+    return;
+  }
+
+  grading[key] = true;
+  const btn = document.getElementById(key + '-btn');
+  btn.disabled = true; btn.textContent = 'Grading…';
+  document.getElementById(key + '-fb').innerHTML =
+    `<div class="feedback-card loading-state">
+       <div class="spinner" style="border-top-color:${COURSE_CONFIG[course].accentVal}"></div>
+       Grading with the official rubric…
+     </div>`;
+
+  const cfg = GRADE_CONFIG[course][type];
+  const systemPrompt = cfg.getSystem
+    ? cfg.getSystem(leqSelections[course] || 1)
+    : cfg.system;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 900,
+        system: systemPrompt,
+        messages: [{ role: 'user', content: `Student response:\n\n${answer}` }],
+      }),
+    });
+    const data = await res.json();
+    let raw = data.content.map(b => b.text || '').join('').trim();
+    raw = raw.replace(/^```json\s*/g,'').replace(/^```\s*/g,'').replace(/```\s*$/g,'').trim();
+    const parsed = JSON.parse(raw);
+    renderFeedback(course, type, parsed, cfg.maxPts, cfg.catLabels, cfg.catMax);
+    document.getElementById('tab-' + key).classList.add('graded');
+  } catch(err) {
+    document.getElementById(key + '-fb').innerHTML =
+      `<div class="feedback-card" style="color:var(--red)">Grading failed — please check your connection and try again.</div>`;
+    console.error('Grading error:', err);
+  }
+
+  grading[key] = false;
+  btn.disabled = false;
+  btn.textContent = '↺ Regrade response';
+}
+
+function renderFeedback(course, type, data, maxPoints, catLabels, catMax) {
+  const pct = Math.round(data.total / maxPoints * 100);
+  const scoreColor = pct >= 70 ? 'var(--green)' : pct >= 50 ? 'var(--amber)' : 'var(--red)';
+  const perfLabel  = pct >= 70 ? 'Strong performance' : pct >= 50 ? 'Developing' : 'Needs work';
+
+  const rows = Object.entries(catLabels).map(([key, label]) => {
+    if (!data[key]) return '';
+    const item = data[key];
+    const max = catMax[key];
+    const passed = item.score > 0;
+    return `<div class="fb-row">
+              <span class="fb-label">${label}</span>
+              <span class="fb-note">${item.feedback}</span>
+              <span class="fb-pill ${passed?'pill-pass':'pill-fail'}">${item.score}/${max}</span>
+            </div>`;
+  }).join('');
+
+  const key = course + '-' + type;
+  document.getElementById(key + '-fb').innerHTML = `
+    <div class="feedback-card">
+      <div class="fb-header">
+        <div>
+          <div class="fb-score-num" style="color:${scoreColor}">
+            ${data.total}<span style="font-size:26px;color:var(--text-faint)"> / ${maxPoints}</span>
+          </div>
+          <div class="fb-score-label">${pct}% &nbsp;·&nbsp; ${perfLabel}</div>
+        </div>
+        <div class="fb-overall">${data.overall}</div>
+      </div>
+      <div class="fb-breakdown">${rows}</div>
+    </div>`;
+}
+</script>
+</body>
+</html>
