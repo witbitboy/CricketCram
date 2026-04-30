@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cricket-Cram — AP Study Tools</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=Lora:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Supabase JS v2 -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- App Styles -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════
+     AUTH BACKDROP + DRAWER
+     ══════════════════════════════════════════════════════════ -->
+<div class="auth-backdrop" id="auth-backdrop" onclick="closeAuthDrawer()"></div>
+
+<div class="auth-drawer" id="auth-drawer" role="dialog" aria-modal="true" aria-label="Sign in or create account">
+  <div class="auth-drawer-inner">
+
+    <!-- Top row -->
+    <div class="auth-drawer-toprow">
+      <div class="auth-drawer-logo">
+        <span>🦗</span> Cricket<span>-Cram</span>
+      </div>
+      <button class="auth-close-btn" onclick="closeAuthDrawer()" aria-label="Close">✕</button>
+    </div>
+
+    <!-- Tabs — also offer standalone pages -->
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tab-login"  onclick="switchAuthTab('login')">Log In</button>
+      <button class="auth-tab"        id="tab-signup" onclick="switchAuthTab('signup')">Sign Up</button>
+    </div>
+
+    <!-- Fields -->
+    <div class="auth-field">
+      <label for="auth-email">Email</label>
+      <input type="email" id="auth-email" placeholder="you@example.com" autocomplete="email" />
+    </div>
+    <div class="auth-field">
+      <label for="auth-password">Password</label>
+      <input type="password" id="auth-password" placeholder="••••••••" autocomplete="current-password" />
+    </div>
+
+    <!-- Submit -->
+    <button class="auth-btn" id="auth-submit-btn" onclick="handleAuth()">
+      <span id="auth-btn-label">Log In</span>
+    </button>
+
+    <!-- Status -->
+    <div class="auth-status" id="auth-status"></div>
+
+    <!-- Links to standalone pages -->
+    <div class="auth-divider">
+      Your study progress is saved to your account. &nbsp;·&nbsp;
+      <a href="login.html" style="color:var(--accent);font-weight:600;text-decoration:none;">Full login page</a>
+      &nbsp;/&nbsp;
+      <a href="signup.html" style="color:var(--accent);font-weight:600;text-decoration:none;">Full signup page</a>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     ANNOUNCEMENTS DRAWER
+     ══════════════════════════════════════════════════════════ -->
+<div class="announce-backdrop" id="announce-backdrop" onclick="closeAnnouncementsDrawer()"></div>
+<div class="announce-drawer" id="announce-drawer" role="dialog" aria-modal="true" aria-label="What's new">
+  <div class="announce-drawer-inner">
+    <div class="announce-toprow">
+      <div class="announce-logo"><span>🦗</span> Cricket<span style="color:var(--accent)">-Cram</span></div>
+      <button class="announce-close-btn" onclick="closeAnnouncementsDrawer()" aria-label="Close">✕</button>
+    </div>
+    <div class="announce-eyebrow">🎉 Release Notes</div>
+    <div class="announce-heading">What's <em>New</em></div>
+    <div class="announce-date">Version 0.0.2 &nbsp;·&nbsp; May 2025</div>
+
+    <div class="announce-item">
+      <div class="announce-item-icon bio">🧬</div>
+      <div>
+        <div class="announce-item-title">AP Biology — Full Rework <span class="announce-tag tag-improved">Improved</span></div>
+        <div class="announce-item-desc">FRQs replaced with real College Board past-exam questions: 2022 AP Bio FRQ #1 (cellular respiration) and 2019 AP Bio FRQ #2 (Mendelian genetics). MCQ section now includes 2 official CB-released question sets from the 2019 and 2012 exams on natural selection and cell communication.</div>
+      </div>
+    </div>
+
+    <div class="announce-item">
+      <div class="announce-item-icon calc">📐</div>
+      <div>
+        <div class="announce-item-title">AP Precalculus — Full Rework <span class="announce-tag tag-improved">Improved</span></div>
+        <div class="announce-item-desc">FRQs now sourced from the 2024 AP Precalculus exam: FRQ #1 is a no-calculator polynomial functions question, FRQ #2 is a calculator-active sinusoidal modeling question (tidal depth). MCQ section now includes 2 official CB-released sets from the 2024 exam. All MCQ questions are now labeled <strong>Calculator</strong> or <strong>No Calculator</strong>.</div>
+      </div>
+    </div>
+
+    <div class="announce-item">
+      <div class="announce-item-icon auth">👤</div>
+      <div>
+        <div class="announce-item-title">Login &amp; Accounts <span class="announce-tag tag-new">New</span></div>
+        <div class="announce-item-desc">Sign up and log in with your email to save your study session. Dedicated <a href="login.html" style="color:var(--accent);font-weight:600;text-decoration:none;">login</a> and <a href="signup.html" style="color:var(--accent);font-weight:600;text-decoration:none;">signup</a> pages are now available.</div>
+      </div>
+    </div>
+
+    <div class="announce-item">
+      <div class="announce-item-icon misc">🔍</div>
+      <div>
+        <div class="announce-item-title">What's Coming Next</div>
+        <div class="announce-item-desc">Progress tracking across sessions, more courses, and additional real exam question sets are all in the works. Leave a review to let us know what you'd like to see!</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     HOME SCREEN
+     ══════════════════════════════════════════════════════════ -->
+<div id="s-home" class="screen active">
+  <div class="home-bg" aria-hidden="true"></div>
+
+  <nav class="home-nav">
+    <div class="logo">
+      <div class="logo-icon" aria-hidden="true">🦗</div>
+      <div class="logo-text">Cricket<span>-</span>Cram</div>
+      <div class="beta-badge">Beta</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <span style="font-family:'Nunito',sans-serif;font-size:11px;font-weight:700;color:var(--text-faint);letter-spacing:.04em">Ver 0.0.2</span>
+
+      <!-- What's New button -->
+      <button class="review-nav-btn" onclick="openAnnouncementsDrawer()" aria-label="What's new" style="background:rgba(212,144,43,0.12);border-color:rgba(212,144,43,0.3);color:#b07a20;">
+        🎉 <span>What's New</span>
+      </button>
+
+      <!-- Sign In button — hidden when signed in -->
+      <button class="auth-nav-btn" id="nav-signin-btn" onclick="openAuthDrawer()" aria-label="Sign in or create account">
+        👤 <span>Sign In</span>
+      </button>
+
+      <!-- User pill — shown when signed in -->
+      <div class="auth-user-pill" id="nav-user-pill" style="display:none">
+        <div class="auth-user-avatar" id="nav-user-avatar">?</div>
+        <span id="nav-user-email" style="max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
+        <button class="auth-signout-btn" onclick="handleSignOut()">Sign out</button>
+      </div>
+
+      <button class="review-nav-btn" onclick="openReviewDrawer()" aria-label="Leave a review">
+        ✦ <span>Leave a Review</span>
+      </button>
+    </div>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-eyebrow fade-up">✦ AP Exam Study Platform</div>
+    <h1 class="fade-up">Study <em>smarter.</em><br>Score higher.</h1>
+    <p class="hero-sub fade-up">Full mock exams with AI-powered essay grading — built for AP students who mean business. Four courses, fully loaded.</p>
+    <div class="hero-stats fade-up">
+      <div class="hero-stat"><div class="hero-stat-num">4</div><div class="hero-stat-label">Courses live</div></div>
+      <div class="hero-stat"><div class="hero-stat-num">253+</div><div class="hero-stat-label">Practice questions</div></div>
+      <div class="hero-stat"><div class="hero-stat-num">AI</div><div class="hero-stat-label">Essay grading</div></div>
+    </div>
+  </div>
+
+  <div class="section-label fade-up"><span>Choose your course</span></div>
+
+  <div class="course-grid">
+
+    <!-- AP WORLD HISTORY — LIVE -->
+    <button class="course-card available fade-up" onclick="openModal('world')" aria-label="Open AP World History: Modern">
+      <div class="course-card-top">
+        <div class="course-icon world" aria-hidden="true">🌍</div>
+        <div class="course-status status-live">Live</div>
+      </div>
+      <div class="course-subject">AP History</div>
+      <div class="course-name">World History:<br>Modern</div>
+      <div class="course-desc">Full mock exam covering Periods 1–4 (1200–present). MCQ, SAQ, DBQ, and LEQ with live AI grading.</div>
+      <div class="course-meta">
+        <span class="course-tag">55 MCQ</span>
+        <span class="course-tag">SAQ · DBQ · LEQ</span>
+        <span class="course-tag">AI Graded</span>
+      </div>
+      <div class="course-stripe stripe-world"></div>
+      <div class="course-enter enter-world" aria-hidden="true">↗</div>
+    </button>
+
+    <!-- AP BIOLOGY — LIVE -->
+    <button class="course-card available fade-up" onclick="openModal('bio')" aria-label="Open AP Biology">
+      <div class="course-card-top">
+        <div class="course-icon bio" aria-hidden="true">🧬</div>
+        <div class="course-status status-live">Live</div>
+      </div>
+      <div class="course-subject">AP Science</div>
+      <div class="course-name">Biology</div>
+      <div class="course-desc">Practice MCQ covering all 8 units plus AI-graded FRQ covering experimental design, data analysis, and core concepts.</div>
+      <div class="course-meta">
+        <span class="course-tag">60 MCQ</span>
+        <span class="course-tag">FRQ</span>
+        <span class="course-tag">AI Graded</span>
+      </div>
+      <div class="course-stripe stripe-bio"></div>
+      <div class="course-enter enter-bio" aria-hidden="true">↗</div>
+    </button>
+
+    <!-- AP PSYCHOLOGY — LIVE -->
+    <button class="course-card available fade-up" onclick="openModal('psych')" aria-label="Open AP Psychology">
+      <div class="course-card-top">
+        <div class="course-icon psych" aria-hidden="true">🧠</div>
+        <div class="course-status status-live">Live</div>
+      </div>
+      <div class="course-subject">AP Science</div>
+      <div class="course-name">Psychology</div>
+      <div class="course-desc">Practice MCQ across all 9 content areas plus AI-graded FRQ covering research methods, behavior, and concepts.</div>
+      <div class="course-meta">
+        <span class="course-tag">100 MCQ</span>
+        <span class="course-tag">FRQ</span>
+        <span class="course-tag">AI Graded</span>
+      </div>
+      <div class="course-stripe stripe-psych"></div>
+      <div class="course-enter enter-psych" aria-hidden="true">↗</div>
+    </button>
+
+    <!-- AP PRECALCULUS — LIVE -->
+    <button class="course-card available fade-up" onclick="openModal('calc')" aria-label="Open AP Precalculus">
+      <div class="course-card-top">
+        <div class="course-icon calc" aria-hidden="true">📐</div>
+        <div class="course-status status-live">Live</div>
+      </div>
+      <div class="course-subject">AP Mathematics</div>
+      <div class="course-name">Precalculus</div>
+      <div class="course-desc">Practice MCQ on functions, polynomials, trig, and more, plus AI-graded FRQ with step-by-step feedback.</div>
+      <div class="course-meta">
+        <span class="course-tag">40 MCQ</span>
+        <span class="course-tag">FRQ</span>
+        <span class="course-tag">AI Graded</span>
+      </div>
+      <div class="course-stripe stripe-calc"></div>
+      <div class="course-enter enter-calc" aria-hidden="true">↗</div>
+    </button>
+
+  </div>
+
+  <footer class="home-footer">
+    <div class="footer-left">
+      <span><span class="pulse-dot"></span>&nbsp; 4 courses live</span>
+      <span style="color:var(--border)">|</span>
+      <span>More courses arriving soon</span>
+    </div>
+    <div class="footer-right">Cricket-Cram &nbsp;·&nbsp; Beta Ver 0.0.2 &nbsp;·&nbsp; Built for AP Students</div>
+  </footer>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     MODAL — Course / Section Selection
+     ══════════════════════════════════════════════════════════ -->
+<div id="modal-overlay" role="dialog" aria-modal="true" onclick="handleOverlayClick(event)">
+  <div class="modal-box" id="modal-box">
+    <div id="modal-heading" class="modal-title">Select a Section</div>
+    <div class="modal-sub" id="modal-sub">Choose which section you'd like to study</div>
+    <div id="modal-options"></div>
+    <button class="modal-cancel" onclick="closeModal()">Cancel</button>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     STICKY EXAM NAV BAR
+     ══════════════════════════════════════════════════════════ -->
+<nav id="exam-nav" aria-label="Exam navigation">
+  <div style="display:flex;align-items:center;gap:12px">
+    <button class="back-btn" onclick="goHome()">← Back to courses</button>
+    <div class="exam-nav-title" id="exam-nav-title">Exam</div>
+  </div>
+  <div class="exam-timer" id="exam-timer">--:--</div>
+</nav>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     MCQ SCREEN (shared by all courses)
+     ══════════════════════════════════════════════════════════ -->
+<div id="s-mcq" class="screen">
+  <div class="exam-body">
+    <div class="mcq-progress">
+      <div class="mcq-progress-info">
+        <span id="q-counter">Question 1 of ?</span>
+        <span id="q-answered">0 answered</span>
+      </div>
+      <div class="mcq-progress-bar"><div class="mcq-progress-fill" id="progress-fill" style="width:0%"></div></div>
+    </div>
+    <div id="qcard-area"></div>
+    <div class="nav-row">
+      <button class="btn" id="btn-prev" onclick="prevQ()">← Prev</button>
+      <button class="btn" id="btn-next" onclick="nextQ()">Next →</button>
+    </div>
+    <button class="btn btn-accent btn-block" id="btn-mcq-submit" onclick="submitMCQ()" style="margin-top:1.5rem">
+      Submit &amp; See Results
+    </button>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     MCQ RESULTS SCREEN
+     ══════════════════════════════════════════════════════════ -->
+<div id="s-results" class="screen">
+  <div class="exam-body">
+    <div id="results-content"></div>
+    <div style="display:flex;gap:10px;margin-top:1.5rem;flex-wrap:wrap">
+      <button class="btn btn-accent" id="results-retake-btn" onclick="retakeMCQ()">Retake MCQ</button>
+      <button class="btn btn-accent" id="results-writing-btn" onclick="goWriting()">Go to Writing Section →</button>
+      <button class="btn btn-accent" id="results-home-btn" onclick="goHome()">Back to courses</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     WRITING SCREEN — AP WORLD HISTORY
+     ══════════════════════════════════════════════════════════ -->
+<div id="s-writing-world" class="screen">
+  <div class="exam-body">
+    <div class="writing-tabs" role="tablist">
+      <button class="wtab wtab-world active" id="tab-world-saq" role="tab" aria-selected="true"  onclick="showWritingTab('world','saq')">Short Answer (SAQ)</button>
+      <button class="wtab wtab-world"        id="tab-world-dbq" role="tab" aria-selected="false" onclick="showWritingTab('world','dbq')">Document-Based (DBQ)</button>
+      <button class="wtab wtab-world"        id="tab-world-leq" role="tab" aria-selected="false" onclick="showWritingTab('world','leq')">Long Essay (LEQ)</button>
+    </div>
+
+    <!-- SAQ -->
+    <div class="tab-content active" id="tc-world-saq">
+      <div class="writing-heading">Short Answer Question</div>
+      <div class="writing-sub">
+        <span class="writing-sub-item">3 parts (a, b, c)</span>
+        <span class="writing-sub-item">No thesis required</span>
+        <span class="writing-sub-item">~40 min suggested</span>
+        <span class="writing-sub-item">20% of exam score</span>
+      </div>
+      <div class="prompt-box">
+        <h4>Stimulus &amp; Prompt</h4>
+        <p><em>"The period from 1450 to 1750 witnessed a dramatic expansion of global trade networks, facilitated by European maritime exploration. These networks transferred not only goods but also people, plants, animals, and diseases across previously isolated regions, transforming societies on every inhabited continent."</em></p><br>
+        <p>Using the passage and your knowledge of world history, answer parts (a), (b), and (c).</p><br>
+        <p><strong>(a)</strong> Briefly describe ONE specific historical development that contributed to the expansion of global trade networks in the period 1450–1750.</p><br>
+        <p><strong>(b)</strong> Briefly explain ONE specific effect of the expansion of global trade networks on a society <em>outside of Europe</em> in the period 1450–1750.</p><br>
+        <p><strong>(c)</strong> Briefly explain ONE way the expansion of global trade networks in the period 1450–1750 represents a <em>continuity</em> with trade patterns from 1200–1450.</p>
+      </div>
+      <div class="rubric-box rubric-world">
+        <strong>Official Rubric — 3 pts (1 per part):</strong> Each response must include a specific, historically accurate development or explanation. General claims without specific evidence earn no credit.
+      </div>
+      <textarea id="world-saq-ans" rows="11" placeholder="Label each part — (a), (b), (c). Write 2–4 specific sentences per part." oninput="updateWC('world-saq')"></textarea>
+      <div class="wc-row" id="world-saq-wc">0 words</div>
+      <div id="world-saq-fb"></div>
+      <button class="btn btn-accent btn-world" id="world-saq-btn" onclick="gradeEssay('world','saq')">Grade my SAQ ↗</button>
+    </div>
+
+    <!-- DBQ -->
+    <div class="tab-content" id="tc-world-dbq">
+      <div class="writing-heading">Document-Based Question</div>
+      <div class="writing-sub">
+        <span class="writing-sub-item">Use 6 of 7 documents</span>
+        <span class="writing-sub-item">~60 min suggested</span>
+        <span class="writing-sub-item">25% of exam score</span>
+      </div>
+      <div class="prompt-box">
+        <h4>Prompt</h4>
+        <p><strong>Evaluate the extent to which the Industrial Revolution transformed social and economic structures in the period 1750–1900.</strong></p><br>
+        <h4>Documents</h4>
+        <p><strong>Doc 1 — Andrew Ure, <em>The Philosophy of Manufactures</em>, 1835:</strong> "The factory system raises the condition of all who participate in its benefits. Children in factories are treated with great kindness and given regular meals and a structured routine."</p><br>
+        <p><strong>Doc 2 — Parliamentary testimony, English mill worker, 1832:</strong> "I have worked in the mill since I was seven. We begin at five in the morning and work until eight at night. The overlooker beats us if we fall asleep."</p><br>
+        <p><strong>Doc 3 — Friedrich Engels, <em>The Condition of the Working Class in England</em>, 1845:</strong> "Workers live in filth, crowded into dark damp cellars. The great industrial towns are sinks of human suffering."</p><br>
+        <p><strong>Doc 4 — Edwin Chadwick, <em>Report on Sanitary Conditions</em>, 1842:</strong> "The annual loss of life from filth and poor ventilation in industrial districts exceeds the loss from any wars in which Britain has engaged in modern times."</p><br>
+        <p><strong>Doc 5 — Samuel Smiles, <em>Self-Help</em>, 1859:</strong> "The spirit of self-help is the root of all genuine growth. The road to advancement lies open to all — industry and perseverance determine a man's station."</p><br>
+        <p><strong>Doc 6 — Karl Marx &amp; Friedrich Engels, <em>The Communist Manifesto</em>, 1848:</strong> "The history of all hitherto existing society is the history of class struggles. The bourgeoisie has left no bond between man and man than naked self-interest."</p><br>
+        <p><strong>Doc 7 — Japanese government commission report, 1890:</strong> "The Western nations have grown powerful through adoption of machinery and the factory system. Japan must industrialize or risk becoming a colony of the industrial powers."</p>
+      </div>
+      <div class="rubric-box rubric-world">
+        <strong>Official Rubric — 7 pts:</strong><br>
+        <strong>Thesis (1)</strong> — Defensible claim + line of reasoning.<br>
+        <strong>Contextualization (1)</strong> — Broader historical context meaningfully connected.<br>
+        <strong>Document Evidence (2)</strong> — ≥3 docs address topic (1pt); ≥6 docs support argument (2pts).<br>
+        <strong>Outside Evidence (1)</strong> — Specific evidence beyond the documents.<br>
+        <strong>Sourcing/HAPP (1)</strong> — Historical situation, audience, purpose, or POV for ≥3 docs.<br>
+        <strong>Complexity (1)</strong> — Corroboration, qualification, or multiple causes/effects.
+      </div>
+      <textarea id="world-dbq-ans" rows="18" placeholder="Write your full DBQ essay: thesis, contextualization, document analysis with sourcing, outside evidence, and complexity." oninput="updateWC('world-dbq')"></textarea>
+      <div class="wc-row" id="world-dbq-wc">0 words</div>
+      <div id="world-dbq-fb"></div>
+      <button class="btn btn-accent btn-world" id="world-dbq-btn" onclick="gradeEssay('world','dbq')">Grade my DBQ ↗</button>
+    </div>
+
+    <!-- LEQ -->
+    <div class="tab-content" id="tc-world-leq">
+      <div class="writing-heading">Long Essay Question</div>
+      <div class="writing-sub">
+        <span class="writing-sub-item">Choose ONE prompt</span>
+        <span class="writing-sub-item">~40 min suggested</span>
+        <span class="writing-sub-item">15% of exam score</span>
+      </div>
+      <div class="prompt-box">
+        <h4>Select one prompt to answer</h4>
+        <label class="leq-opt">
+          <input type="radio" name="world-leq-prompt" value="1" onchange="setLEQ('world',1)">
+          <span class="leq-opt-text"><strong>Option 1 — c. 1200–1450:</strong> Evaluate the extent to which the Mongol Empire changed patterns of trade and cross-cultural exchange in Eurasia.</span>
+        </label>
+        <label class="leq-opt">
+          <input type="radio" name="world-leq-prompt" value="2" onchange="setLEQ('world',2)">
+          <span class="leq-opt-text"><strong>Option 2 — c. 1450–1750:</strong> Evaluate the extent to which the Columbian Exchange transformed the economies and societies of the Americas and Europe.</span>
+        </label>
+        <label class="leq-opt">
+          <input type="radio" name="world-leq-prompt" value="3" onchange="setLEQ('world',3)">
+          <span class="leq-opt-text"><strong>Option 3 — c. 1750–1900:</strong> Evaluate the extent to which nationalism drove political change in Europe and the Americas.</span>
+        </label>
+      </div>
+      <div class="rubric-box rubric-world">
+        <strong>Official Rubric — 6 pts:</strong><br>
+        <strong>Thesis (1)</strong> — Defensible claim with line of reasoning.<br>
+        <strong>Contextualization (1)</strong> — Broader historical context meaningfully related.<br>
+        <strong>Evidence (2)</strong> — Specific examples (1pt); used to support argument (2pts).<br>
+        <strong>Historical Reasoning (1)</strong> — Comparison, causation, or CCOT.<br>
+        <strong>Complexity (1)</strong> — Corroboration, qualification, or multiple causes/effects.
+      </div>
+      <div class="leq-hint" id="world-leq-hint">Select a prompt above before writing.</div>
+      <textarea id="world-leq-ans" rows="14" placeholder="Select a prompt above, then write your full essay here." oninput="updateWC('world-leq')"></textarea>
+      <div class="wc-row" id="world-leq-wc">0 words</div>
+      <div id="world-leq-fb"></div>
+      <button class="btn btn-accent btn-world" id="world-leq-btn" onclick="gradeEssay('world','leq')">Grade my LEQ ↗</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     WRITING SCREEN — AP BIOLOGY
+     ══════════════════════════════════════════════════════════ -->
+<div id="s-writing-bio" class="screen">
+  <div class="exam-body">
+    <div class="writing-tabs" role="tablist">
+      <button class="wtab wtab-bio active" id="tab-bio-frq1" role="tab" aria-selected="true"  onclick="showWritingTab('bio','frq1')">FRQ 1 — Cellular Respiration</button>
+      <button class="wtab wtab-bio"        id="tab-bio-frq2" role="tab" aria-selected="false" onclick="showWritingTab('bio','frq2')">FRQ 2 — Genetics</button>
+    </div>
+
+    <!-- FRQ 1 -->
+    <div class="tab-content active" id="tc-bio-frq1">
+      <div class="writing-heading">Free Response — Long FRQ</div>
+      <div class="writing-sub">
+        <span class="writing-sub-item">Source: 2022 AP Bio Exam · FRQ #1</span>
+        <span class="writing-sub-item">~25 min suggested</span>
+        <span class="writing-sub-item">8–10 pts</span>
+      </div>
+      <div class="prompt-box">
+        <h4>Prompt — 2022 AP Biology Free-Response Question 1</h4>
+        <p>Glucose is a primary source of energy for cellular metabolism. In eukaryotic cells, glucose is broken down through a series of metabolic pathways.</p><br>
+        <p><strong>(a)</strong> Identify the location where glycolysis occurs in a eukaryotic cell and describe what happens to the pyruvate produced during glycolysis when oxygen <em>is</em> available.</p><br>
+        <p><strong>(b)</strong> Identify <strong>two</strong> electron carriers produced by the citric acid cycle and explain how these carriers contribute to ATP synthesis in the electron transport chain.</p><br>
+        <p><strong>(c)</strong> A researcher blocks Complex I of the electron transport chain using a poison. Predict and explain the effect on: (i) the proton gradient across the inner mitochondrial membrane, and (ii) the overall ATP yield per glucose molecule.</p><br>
+        <p><strong>(d)</strong> Describe the process of lactic acid fermentation and explain why it is necessary for continued ATP production under anaerobic conditions.</p>
+      </div>
+      <div class="rubric-box rubric-bio">
+        <strong>Official Rubric (~10 pts):</strong> Location of glycolysis + fate of pyruvate with O₂ (2), Two electron carriers + role in ETC/ATP synthesis (2), Effect on proton gradient + ATP yield with reasoning (3), Fermentation description + necessity for glycolysis continuity (2), Scientific communication (1).
+      </div>
+      <textarea id="bio-frq1-ans" rows="14" placeholder="Answer each part clearly. Label parts (a), (b), (c), (d) in your response." oninput="updateWC('bio-frq1')"></textarea>
+      <div class="wc-row" id="bio-frq1-wc">0 words</div>
+      <div id="bio-frq1-fb"></div>
+      <button class="btn btn-accent btn-bio" id="bio-frq1-btn" onclick="gradeEssay('bio','frq1')">Grade my FRQ ↗</button>
+    </div>
+
+    <!-- FRQ 2 -->
+    <div class="tab-content" id="tc-bio-frq2">
+      <div class="writing-heading">Free Response — Experimental Design FRQ</div>
+      <div class="writing-sub">
+        <span class="writing-sub-item">Source: 2019 AP Bio Exam · FRQ #2</span>
+        <span class="writing-sub-item">~22 min suggested</span>
+        <span class="writing-sub-item">6 pts</span>
+      </div>
+      <div class="prompt-box">
+        <h4>Prompt — 2019 AP Biology Free-Response Question 2</h4>
+        <p>Pea plants produce flowers that can be either purple or white. A student performs crosses between true-breeding purple-flowered plants and true-breeding white-flowered plants.</p><br>
+        <p><strong>Cross 1:</strong> Purple ✕ White → All F₁ offspring are purple-flowered.<br>
+        <strong>Cross 2:</strong> F₁ ✕ F₁ → F₂ offspring are approximately 3 purple : 1 white.</p><br>
+        <p><strong>(a)</strong> Identify which flower color is dominant and provide evidence from the crosses to support your claim.</p><br>
+        <p><strong>(b)</strong> Using appropriate genetic notation, write the genotypes of the true-breeding purple parent, the true-breeding white parent, and the F₁ offspring. Explain your reasoning.</p><br>
+        <p><strong>(c)</strong> An F₂ purple-flowered plant, when self-crossed, produces only purple-flowered offspring. Predict the genotype of this F₂ plant and explain how this result supports your prediction.</p><br>
+        <p><strong>(d)</strong> The gene for flower color is on chromosome 1; plant height is on chromosome 7. Predict whether these genes will assort independently, and identify the law that supports your prediction.</p>
+      </div>
+      <div class="rubric-box rubric-bio">
+        <strong>Official Rubric (~6 pts):</strong> Dominant/recessive identification with evidence (1), Correct genotypes with reasoning (2), Homozygous dominant genotype + explanation (1), Independent assortment + Mendel's Law (2).
+      </div>
+      <textarea id="bio-frq2-ans" rows="11" placeholder="Label parts (a), (b), (c), (d). Use proper genetic notation (e.g. PP, Pp, pp)." oninput="updateWC('bio-frq2')"></textarea>
+      <div class="wc-row" id="bio-frq2-wc">0 words</div>
+      <div id="bio-frq2-fb"></div>
+      <button class="btn btn-accent btn-bio" id="bio-frq2-btn" onclick="gradeEssay('bio','frq2')">Grade my FRQ ↗</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     WRITING SCREEN — AP PSYCHOLOGY
+     ══════════════════════════════════════════════════════════ -->
+<div id="s-writing-psych" class="screen">
+  <div class="exam-body">
+    <div class="writing-tabs" role="tablist">
+      <button class="wtab wtab-psych active" id="tab-psych-frq1" role="tab" aria-selected="true"  onclick="showWritingTab('psych','frq1')">FRQ 1 — Concept Application</button>
+      <button class="wtab wtab-psych"        id="tab-psych-frq2" role="tab" aria-selected="false" onclick="showWritingTab('psych','frq2')">FRQ 2 — Research Methods</button>
+    </div>
+
+    <!-- FRQ 1 -->
+    <div class="tab-content active" id="tc-psych-frq1">
+      <div class="writing-heading">Free Response — Concept Application</div>
+      <div class="writing-sub">
+        <span class="writing-sub-item">Scenario-based FRQ</span>
+        <span class="writing-sub-item">~25 min suggested</span>
+        <span class="writing-sub-item">7 pts</span>
+      </div>
+      <div class="prompt-box">
+        <h4>Scenario</h4>
+        <p>Maya is a college student preparing for her AP Psychology exam. She studies in the same room where she will take the test, uses spaced repetition over several weeks, and manages her stress with regular exercise. She notices she remembers the beginning and end of her study sessions better than the middle. The night before the exam, she feels anxious but recalls her professor mentioning that moderate stress can improve performance.</p><br>
+        <p>Using your knowledge of psychology, explain how each of the following applies to Maya's situation:</p><br>
+        <p><strong>(a)</strong> Encoding specificity principle</p>
+        <p><strong>(b)</strong> Serial position effect</p>
+        <p><strong>(c)</strong> Cortisol and the relationship between stress and memory</p>
+        <p><strong>(d)</strong> Spaced practice (distributed practice effect)</p>
+        <p><strong>(e)</strong> Role of the hippocampus in explicit memory formation</p>
+      </div>
+      <div class="rubric-box rubric-psych">
+        <strong>Scoring Guide (7 pts):</strong> Each part requires a correct definition/identification AND a specific application to Maya's scenario. Definition alone = partial credit only.
+      </div>
+      <textarea id="psych-frq1-ans" rows="13" placeholder="Label each part (a)–(e). Define each concept, then explain how it applies to Maya." oninput="updateWC('psych-frq1')"></textarea>
+      <div class="wc-row" id="psych-frq1-wc">0 words</div>
+      <div id="psych-frq1-fb"></div>
+      <button class="btn btn-accent btn-psych" id="psych-frq1-btn" onclick="gradeEssay('psych','frq1')">Grade my FRQ ↗</button>
+    </div>
+
+    <!-- FRQ 2 -->
+    <div class="tab-content" id="tc-psych-frq2">
+      <div class="writing-heading">Free Response — Research Methods</div>
+      <div class="writing-sub">
+        <span class="writing-sub-item">Research design FRQ</span>
+        <span class="writing-sub-item">~20 min suggested</span>
+        <span class="writing-sub-item">7 pts</span>
+      </div>
+      <div class="prompt-box">
+        <h4>Scenario</h4>
+        <p>A researcher wants to test whether listening to classical music improves performance on math tests. She randomly assigns 60 participants into two groups: one group listens to Mozart for 10 minutes before a math test; the other group sits in silence for 10 minutes before the same test.</p><br>
+        <p><strong>(a)</strong> Identify the <strong>independent variable</strong> and the <strong>dependent variable</strong> in this study.</p><br>
+        <p><strong>(b)</strong> Explain why <strong>random assignment</strong> is important in this experiment.</p><br>
+        <p><strong>(c)</strong> The researcher finds that the Mozart group scored 8% higher on average. Explain whether this result would allow her to establish <strong>cause and effect</strong>.</p><br>
+        <p><strong>(d)</strong> A classmate suggests that the results might be explained by the <strong>placebo effect</strong>. Explain what this means in this context.</p><br>
+        <p><strong>(e)</strong> Describe ONE ethical principle from the <strong>APA guidelines</strong> that the researcher must follow in this study.</p>
+      </div>
+      <div class="rubric-box rubric-psych">
+        <strong>Scoring Guide (7 pts):</strong> Correct IV/DV identification (2), Purpose of random assignment (1), Causation reasoning (1), Placebo effect application (1), APA ethical principle (2).
+      </div>
+      <textarea id="psych-frq2-ans" rows="13" placeholder="Label each part (a)–(e). Be specific and use psychological terminology." oninput="updateWC('psych-frq2')"></textarea>
+      <div class="wc-row" id="psych-frq2-wc">0 words</div>
+      <div id="psych-frq2-fb"></div>
+      <button class="btn btn-accent btn-psych" id="psych-frq2-btn" onclick="gradeEssay('psych','frq2')">Grade my FRQ ↗</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     WRITING SCREEN — AP PRECALCULUS
+     ══════════════════════════════════════════════════════════ -->
+<div id="s-writing-calc" class="screen">
+  <div class="exam-body">
+    <div class="writing-tabs" role="tablist">
+      <button class="wtab wtab-calc active" id="tab-calc-frq1" role="tab" aria-selected="true"  onclick="showWritingTab('calc','frq1')">FRQ 1 — Polynomial (No Calc)</button>
+      <button class="wtab wtab-calc"        id="tab-calc-frq2" role="tab" aria-selected="false" onclick="showWritingTab('calc','frq2')">FRQ 2 — Sinusoidal (Calc)</button>
+    </div>
+
+    <!-- FRQ 1 -->
+    <div class="tab-content active" id="tc-calc-frq1">
+      <div class="writing-heading">Free Response — Polynomial Functions</div>
+      <div class="writing-sub">
+        <span class="writing-sub-item">Source: 2024 AP Precalculus Exam · FRQ #1</span>
+        <span class="writing-sub-item">🚫 No Calculator</span>
+        <span class="writing-sub-item">~30 min suggested</span>
+        <span class="writing-sub-item">6 pts</span>
+      </div>
+      <div class="prompt-box">
+        <h4>Prompt — 2024 AP Precalculus Free-Response Question 1 (No Calculator)</h4>
+        <p>The polynomial function <em>p</em> is given by <em>p(x) = −(x + 1)(x − 1)(x − 3)²</em>.</p><br>
+        <p><strong>(a)</strong> The polynomial function <em>q</em> is given by <em>q(x) = (x + 1)(x − 1)(x − 3)²</em>. Describe how the graphs of <em>p</em> and <em>q</em> are related. Explain why this is the case in terms of the leading coefficient.</p><br>
+        <p><strong>(b)</strong> Determine and interpret the end behavior of <em>p(x)</em> as x → +∞ and as x → −∞. Explain how the degree and leading coefficient determine the end behavior.</p><br>
+        <p><strong>(c)</strong> The function <em>p</em> has zeros at x = −1, x = 1, and x = 3. Determine whether the graph of <em>p</em> crosses or only touches (but does not cross) the x-axis at each zero, and explain your reasoning using the multiplicity of each zero.</p><br>
+        <p><strong>(d)</strong> The graph of <em>p</em> has a local maximum between x = −1 and x = 1. Identify the approximate x-coordinate of the local maximum and identify all intervals over which <em>p</em> is increasing.</p>
+      </div>
+      <div class="rubric-box rubric-calc">
+        <strong>Official Rubric (6 pts):</strong> Relationship between p and q with leading coefficient reasoning (1), Correct end behavior with explanation (2), Zero behavior with multiplicity reasoning for all three zeros (2), Local max identification + increasing intervals (1).
+      </div>
+      <textarea id="calc-frq1-ans" rows="13" placeholder="Label each part (a)–(d). Show all reasoning — no calculator, so justify analytically." oninput="updateWC('calc-frq1')"></textarea>
+      <div class="wc-row" id="calc-frq1-wc">0 words</div>
+      <div id="calc-frq1-fb"></div>
+      <button class="btn btn-accent btn-calc" id="calc-frq1-btn" onclick="gradeEssay('calc','frq1')">Grade my FRQ ↗</button>
+    </div>
+
+    <!-- FRQ 2 -->
+    <div class="tab-content" id="tc-calc-frq2">
+      <div class="writing-heading">Free Response — Sinusoidal Functions &amp; Modeling</div>
+      <div class="writing-sub">
+        <span class="writing-sub-item">Source: 2024 AP Precalculus Exam · FRQ #2</span>
+        <span class="writing-sub-item">✅ Calculator Active</span>
+        <span class="writing-sub-item">~30 min suggested</span>
+        <span class="writing-sub-item">6 pts</span>
+      </div>
+      <div class="prompt-box">
+        <h4>Prompt — 2024 AP Precalculus Free-Response Question 2 (Calculator)</h4>
+        <p>The depth of water, in feet, at a coastal location can be modeled by a sinusoidal function. The table below gives the depth of water at selected times during one day.</p><br>
+        <p><strong>Time (hours after midnight):</strong> 0 → 6.0 ft | 3 → 11.5 ft | 6 → 6.0 ft | 9 → 0.5 ft | 12 → 6.0 ft</p><br>
+        <p><strong>(a)</strong> Determine the amplitude, midline, and period of a sinusoidal function that models the depth of water <em>d(t)</em>. Explain how you determined each value.</p><br>
+        <p><strong>(b)</strong> Write an equation for <em>d(t)</em>, the depth of water in feet, as a function of <em>t</em>, the number of hours after midnight. Show your work.</p><br>
+        <p><strong>(c)</strong> According to your model, what is the depth of water at t = 4 hours? Round to the nearest hundredth.</p><br>
+        <p><strong>(d)</strong> A boat requires a minimum water depth of 8 feet to dock safely. Determine all time intervals during the first 12 hours after midnight when the boat can dock. Show supporting work and round to the nearest hundredth.</p>
+      </div>
+      <div class="rubric-box rubric-calc">
+        <strong>Official Rubric (6 pts):</strong> Amplitude, midline, period all correct with explanations (2), Correct sinusoidal equation (1), Depth at t=4 with work (1), Time intervals when d ≥ 8 with supporting work (2).
+      </div>
+      <textarea id="calc-frq2-ans" rows="13" placeholder="Label each part (a)–(d). Calculator allowed — show setup and round as instructed." oninput="updateWC('calc-frq2')"></textarea>
+      <div class="wc-row" id="calc-frq2-wc">0 words</div>
+      <div id="calc-frq2-fb"></div>
+      <button class="btn btn-accent btn-calc" id="calc-frq2-btn" onclick="gradeEssay('calc','frq2')">Grade my FRQ ↗</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     REVIEW DRAWER
+     ══════════════════════════════════════════════════════════ -->
+<div class="review-backdrop" id="review-backdrop" onclick="closeReviewDrawer()"></div>
+
+<div class="review-drawer" id="review-drawer" role="dialog" aria-modal="true" aria-label="Leave a review">
+  <div class="review-drawer-inner">
+    <div class="review-drawer-toprow">
+      <div class="review-drawer-logo">
+        <span>🦗</span> Cricket<span>-Cram</span>
+      </div>
+      <button class="review-close-btn" onclick="closeReviewDrawer()" aria-label="Close review drawer">✕</button>
+    </div>
+    <div class="review-eyebrow">✦ Share your thoughts</div>
+    <div class="review-heading">Leave us a <em>review</em></div>
+    <p class="review-sub">Your feedback helps us improve Cricket-Cram for every AP student. We read every single submission.</p>
+    <label class="review-field-label" for="review-drawer-input">Your message</label>
+    <textarea class="review-textarea" id="review-drawer-input"
+      placeholder="What did you think? What could be better? Any courses you'd love to see added…"
+      maxlength="1000"></textarea>
+    <div class="review-char-count" id="review-char-count">0 / 1000</div>
+    <button class="review-submit-btn" id="review-submit-btn" onclick="submitReviewDrawer()">
+      <span id="review-btn-label">Send Feedback</span>
+    </button>
+    <div class="review-status success" id="review-status-success">✓ &nbsp;Thanks! Your review was submitted successfully.</div>
+    <div class="review-status error" id="review-status-error">✕ &nbsp;<span id="review-error-msg">Something went wrong. Please try again.</span></div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     APP SCRIPTS
+     ══════════════════════════════════════════════════════════ -->
+<script src="script.js"></script>
+
+</body>
+</html>

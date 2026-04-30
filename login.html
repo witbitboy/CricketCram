@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Log In — Cricket-Cram</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=Lora:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Supabase JS v2 -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Shared Styles -->
+  <link rel="stylesheet" href="styles.css">
+
+  <style>
+    /* ── Auth Page Layout ─────────────────────────────────── */
+    .auth-page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1.25rem;
+      position: relative;
+    }
+
+    /* Decorative background (same as home) */
+    .auth-page-bg {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
+    }
+    .auth-page-bg::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 20% -10%, rgba(91,155,106,0.08) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 80% 100%, rgba(74,144,217,0.06) 0%, transparent 60%);
+    }
+
+    .auth-page-card {
+      position: relative; z-index: 1;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--r-xl);
+      box-shadow: var(--shadow-lg);
+      width: 100%;
+      max-width: 420px;
+      overflow: hidden;
+    }
+
+    /* Top accent stripe */
+    .auth-page-card::before {
+      content: '';
+      display: block;
+      height: 4px;
+      background: linear-gradient(90deg, var(--accent), #7BC48A, var(--accent2));
+    }
+
+    .auth-page-inner {
+      padding: 2rem 2rem 2.25rem;
+    }
+
+    /* Logo row */
+    .auth-page-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 1.75rem;
+      text-decoration: none;
+    }
+    .auth-page-logo-icon {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      box-shadow: 0 3px 10px var(--accent-glow);
+      flex-shrink: 0;
+    }
+    .auth-page-logo-text {
+      font-family: 'Nunito', sans-serif;
+      font-weight: 900; font-size: 18px; letter-spacing: -0.02em; color: var(--text);
+    }
+    .auth-page-logo-text span { color: var(--accent); }
+
+    /* Heading */
+    .auth-page-heading {
+      font-family: 'Lora', serif;
+      font-size: 1.6rem; font-weight: 600; line-height: 1.2;
+      margin-bottom: 0.3rem;
+    }
+    .auth-page-heading em { font-style: italic; color: var(--accent); }
+    .auth-page-sub {
+      font-size: 13px; color: var(--text-muted); margin-bottom: 1.75rem; line-height: 1.5;
+    }
+
+    /* Tab switcher */
+    .auth-page-tabs {
+      display: flex;
+      background: var(--surface2);
+      border-radius: var(--r-sm);
+      padding: 3px;
+      margin-bottom: 1.4rem;
+      gap: 3px;
+    }
+    .auth-page-tab {
+      flex: 1;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 13px; font-weight: 800;
+      color: var(--text-muted);
+      background: transparent;
+      cursor: pointer;
+      transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+      text-align: center;
+      text-decoration: none;
+      display: block;
+    }
+    .auth-page-tab.active, .auth-page-tab:hover {
+      background: var(--surface);
+      color: var(--accent2);
+      box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+    }
+
+    /* Divider */
+    .auth-page-divider {
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-faint);
+      margin-top: 1.1rem;
+      padding-top: 1.1rem;
+      border-top: 1px solid var(--border);
+    }
+    .auth-page-divider a {
+      color: var(--accent); font-weight: 700; text-decoration: none;
+    }
+    .auth-page-divider a:hover { text-decoration: underline; }
+
+    /* Spinner */
+    .auth-spinner {
+      width: 15px; height: 15px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: inline-block; vertical-align: middle; margin-right: 6px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+<div class="auth-page-bg" aria-hidden="true"></div>
+
+<main class="auth-page" role="main">
+  <div class="auth-page-card">
+    <div class="auth-page-inner">
+
+      <!-- Logo — links back to home -->
+      <a href="index.html" class="auth-page-logo" aria-label="Cricket-Cram home">
+        <div class="auth-page-logo-icon">🦗</div>
+        <div class="auth-page-logo-text">Cricket<span>-Cram</span></div>
+      </a>
+
+      <!-- Heading -->
+      <div class="auth-page-heading">Welcome <em>back.</em></div>
+      <p class="auth-page-sub">Log in to Cricket-Cram to continue your AP study session.</p>
+
+      <!-- Tabs -->
+      <div class="auth-page-tabs" role="tablist">
+        <span class="auth-page-tab active" role="tab" aria-selected="true">Log In</span>
+        <a  class="auth-page-tab"          href="signup.html" role="tab" aria-selected="false">Sign Up</a>
+      </div>
+
+      <!-- Email field -->
+      <div class="auth-field">
+        <label for="login-email">Email</label>
+        <input type="email" id="login-email" placeholder="you@example.com" autocomplete="email" />
+      </div>
+
+      <!-- Password field -->
+      <div class="auth-field">
+        <label for="login-password">Password</label>
+        <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password" />
+      </div>
+
+      <!-- Submit -->
+      <button class="auth-btn" id="login-submit-btn" onclick="handleLogin()">
+        <span id="login-btn-label">Log In</span>
+      </button>
+
+      <!-- Status -->
+      <div class="auth-status" id="login-status"></div>
+
+      <!-- Footer links -->
+      <div class="auth-page-divider">
+        Don't have an account? <a href="signup.html">Create one →</a>
+        &nbsp;·&nbsp;
+        <a href="index.html">← Back to courses</a>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<script>
+  /* ── Supabase credentials ────────────────────────────────── */
+  const SUPABASE_URL  = 'https://jvmmtlsbokazwvdhzdhz.supabase.co';
+  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp2bW10bHNib2thend2ZGh6ZGh6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc0MTIzMzEsImV4cCI6MjA5Mjk4ODMzMX0.V4KVdY4gbGLJkUoaBLMJCO910yfBmgZlIOAz2ziT9ec';
+
+  const { createClient } = supabase;
+  const db = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+  /* ── If already signed in, go straight to app ────────────── */
+  (async () => {
+    const { data: { session } } = await db.auth.getSession();
+    if (session && session.user) {
+      window.location.href = 'index.html';
+    }
+  })();
+
+  /* ── Handle login ─────────────────────────────────────────── */
+  async function handleLogin() {
+    const email    = document.getElementById('login-email').value.trim();
+    const password = document.getElementById('login-password').value;
+    clearStatus();
+
+    if (!email || !password) {
+      showStatus('error', '✕  Please enter your email and password.');
+      return;
+    }
+    if (password.length < 6) {
+      showStatus('error', '✕  Password must be at least 6 characters.');
+      return;
+    }
+
+    setLoading(true);
+    const { data, error } = await db.auth.signInWithPassword({ email, password });
+    setLoading(false);
+
+    if (error) {
+      showStatus('error', '✕  ' + friendlyError(error.message));
+    } else {
+      showStatus('success', '✓  Logged in! Redirecting…');
+      setTimeout(() => { window.location.href = 'index.html'; }, 900);
+    }
+  }
+
+  /* ── Helpers ─────────────────────────────────────────────── */
+  function setLoading(on) {
+    const btn = document.getElementById('login-submit-btn');
+    document.getElementById('login-btn-label').innerHTML = on
+      ? '<span class="auth-spinner"></span> Logging in…'
+      : 'Log In';
+    btn.disabled = on;
+  }
+
+  function showStatus(type, msg) {
+    const el = document.getElementById('login-status');
+    el.className = 'auth-status ' + type + ' show';
+    el.textContent = msg;
+  }
+
+  function clearStatus() {
+    const el = document.getElementById('login-status');
+    el.className = 'auth-status';
+    el.textContent = '';
+  }
+
+  function friendlyError(msg) {
+    if (!msg) return 'Something went wrong. Please try again.';
+    if (msg.includes('Invalid login credentials')) return 'Incorrect email or password.';
+    if (msg.includes('Email not confirmed'))       return 'Please confirm your email before logging in.';
+    if (msg.includes('User already registered'))   return 'An account with that email already exists.';
+    if (msg.includes('Password should be'))        return 'Password must be at least 6 characters.';
+    if (msg.includes('Unable to validate'))        return 'Invalid email address.';
+    return msg;
+  }
+
+  /* ── Enter key submits ────────────────────────────────────── */
+  ['login-email', 'login-password'].forEach(id => {
+    document.getElementById(id).addEventListener('keydown', e => {
+      if (e.key === 'Enter') handleLogin();
+    });
+  });
+</script>
+
+</body>
+</html>
